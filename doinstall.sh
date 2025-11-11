@@ -5,4 +5,6 @@ sudo apt install docker -y
 
 sudo docker pull alpine:latest
 
+sudo docker pull ubuntu:latest
+
 echo "Installation complete."
