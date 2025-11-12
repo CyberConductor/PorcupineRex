@@ -11,7 +11,7 @@ session_id="session-$timestamp-$RANDOM"
 logpath="$LOGDIR/$session_id.log"
 
 #docker image to use(linux distro):
-IMAGE="alpine:latest"
+IMAGE="ubuntu:latest"
 
 # resource and security limits
 MEM_LIMIT="200m"

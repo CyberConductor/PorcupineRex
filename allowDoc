@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#/etc/ssh/sshd_config
+
+
+sudo groupadd --force docker-shell
+
+sudo usermod -aG docker-shell ho #open with this user
+
+Match Group docker-shell
+    ForceCommand /usr/local/bin/ssh-docker-shell #load the docker redirect
+    PermitTunnel no
+    AllowTCPForwarding no
+    X11Forwarding no
