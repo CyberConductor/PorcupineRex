@@ -1,14 +1,16 @@
 #!/bin/bash
 
-#/etc/ssh/sshd_config
+LINE="ForceCommand docker run -it --rm ubuntu:latest /bin/bash"
 
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 
-sudo groupadd --force docker-shell
+if ! grep -Fxq "$LINE" /etc/ssh/sshd_config; then
+    echo "$LINE" | sudo tee -a /etc/ssh/sshd_config
+    echo "Line added successfully."
+else
+    echo "Line already exists in sshd_config."
+fi
 
-sudo usermod -aG docker-shell ho #open with this user
+sudo systemctl restart ssh
 
-Match Group docker-shell
-    ForceCommand /usr/local/bin/ssh-docker-shell #load the docker redirect
-    PermitTunnel no
-    AllowTCPForwarding no
-    X11Forwarding no
+echo "SSHD restarted."
