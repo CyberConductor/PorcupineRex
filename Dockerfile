@@ -1,16 +1,23 @@
- use a small base image
 FROM ubuntu:latest
 
-#create a non-root user and a honeypot logs dir
-RUN addgroup -g 1000 honeypot \
- && adduser -u 1000 -G honeypot -D -h /home/honeypot honeypot \
+#create honeypot user and logs directory
+RUN groupadd honeypot \
+ && useradd -m -g honeypot -d /home/honeypot honeypot \
  && mkdir -p /honeypot-logs \
  && chown honeypot:honeypot /honeypot-logs
-RUN apt-get update && apt-get install -y --no-install-recommends util-linux \
- && rm -rf /var/lib/apt/lists/*
-#set working directory and set user to non-root
-WORKDIR /home/honeypot
-USER honeypot
 
-#keeps the container running
-ENTRYPOINT [ "sleep", "3600" ]
+#create user ho to match the ssh username
+RUN useradd -m ho \
+ && mkdir -p /home/ho \
+ && chown -R ho:ho /home/ho
+
+#install small tools
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends util-linux \
+ && rm -rf /var/lib/apt/lists/*
+
+#set default working directory and user
+WORKDIR /home/ho
+USER ho
+
+CMD [ "/bin/bash" ]
