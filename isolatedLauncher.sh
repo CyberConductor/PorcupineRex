@@ -5,7 +5,9 @@ set -euo pipefail
 #path to save logs:
 LOGDIR="/var/log/honeypot"
 mkdir -p "$LOGDIR"
-chown ho:sec123"$LOGDIR" 2>/dev/null || true # user created
+#using recursive command -R in case that there are files in that fath
+chown -R ho:sec123 "$LOGDIR" 2>/dev/null || true # user created
+
 timestamp=$(date +%Y%m%d-%H%M%S)
 session_id="session-$timestamp-$RANDOM"
 logpath="$LOGDIR/$session_id.log"
@@ -32,7 +34,7 @@ container_id=$(docker run -d --rm \
   --cap-drop ALL \
   "$IMAGE" sleep 3600)
 
-if command -v script >/dev/null 2>&1; thens
+if command -v script >/dev/null 2>&1; then
   docker exec -it "$container_id" sh -lc "apk add --no-cache util-linux >/dev/null 2>&1 || true; script -q -c '/bin/sh' /honeypot-logs/$session_id.typescript" <&0 2>&1 | tee -a "$logpath"
 else
   docker exec -i "$container_id" sh -lc '/bin/sh' <&0 2>&1 | tee -a "$logpath"
