@@ -19,7 +19,7 @@ docker build -t ubuntu_ho -f /tmp/Dockerfile_ubuntu_ho /tmp
 #create wrapper script that drops ssh users into the container
 cat << 'EOF' > /usr/local/bin/docker-shell.sh
 #!/bin/bash
-#drop the ssh user into the container as ho, non root
+#drop the ssh user into the container a ho, non root
 exec docker run -it --rm --user ho ubuntu_ho /bin/bash
 EOF
 
