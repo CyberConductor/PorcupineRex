@@ -22,19 +22,25 @@ RUN echo 'export PROMPT_COMMAND="history -a"' >> /home/ho/.bashrc \
  && echo 'export HISTTIMEFORMAT="%Y-%m-%d %H:%M:%S "' >> /home/ho/.bashrc \
  && chown ho:ho /home/ho/.bashrc
 
-#install small tools
+#install required tools (jq for json + passwd + util-linux)
 RUN apt-get update \
- && apt-get install -y --no-install-recommends util-linux passwd \
+ && apt-get install -y --no-install-recommends util-linux passwd jq \
  && rm -rf /var/lib/apt/lists/*
 
-#copy your user creation script
+#copy JSON file with users
+COPY users.json /usr/local/etc/users.json
+
+#copy scripts
 COPY create_users.sh /usr/local/bin/create_users.sh
+COPY put_users_files.sh /usr/local/bin/put_users_files.sh
 
-#set permissions
-RUN chmod +x /usr/local/bin/create_users.sh
+#set script permissions
+RUN chmod +x /usr/local/bin/create_users.sh \
+ && chmod +x /usr/local/bin/put_users_files.sh
 
-#run the fake user creation script during build
-RUN /usr/local/bin/create_users.sh
+#run scripts during build
+RUN /usr/local/bin/create_users.sh \
+ && /usr/local/bin/put_users_files.sh
 
 #set default working directory and user
 WORKDIR /home/ho

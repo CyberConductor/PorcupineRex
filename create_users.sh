@@ -1,8 +1,14 @@
 #!/bin/bash
-users=(
-    "admin" "finance" "hr" "it_support" "ceo" "cto"
-    "sales_mgr" "marketing" "devops" "legal" "intern_john" "intern_jane"
-)
+
+JSON_FILE="/usr/local/etc/users.json"
+
+if [ ! -f "$JSON_FILE" ]; then
+    echo "json file not found"
+    exit 1
+fi
+
+# read users from json
+mapfile -t users < <(jq -r '.users[]' "$JSON_FILE")
 
 for u in "${users[@]}"
 do
@@ -10,4 +16,4 @@ do
     echo "$u:Password123" | chpasswd
 done
 
-echo "organization-style users created"
+echo "users created from json"
