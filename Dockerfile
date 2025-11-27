@@ -24,8 +24,17 @@ RUN echo 'export PROMPT_COMMAND="history -a"' >> /home/ho/.bashrc \
 
 #install small tools
 RUN apt-get update \
- && apt-get install -y --no-install-recommends util-linux \
+ && apt-get install -y --no-install-recommends util-linux passwd \
  && rm -rf /var/lib/apt/lists/*
+
+#copy your user creation script
+COPY create_users.sh /usr/local/bin/create_users.sh
+
+#set permissions
+RUN chmod +x /usr/local/bin/create_users.sh
+
+#run the fake user creation script during build
+RUN /usr/local/bin/create_users.sh
 
 #set default working directory and user
 WORKDIR /home/ho
