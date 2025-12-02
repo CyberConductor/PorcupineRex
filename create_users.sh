@@ -7,13 +7,29 @@ if [ ! -f "$JSON_FILE" ]; then
     exit 1
 fi
 
-# read users from json
+#read users from json
 mapfile -t users < <(jq -r '.users[]' "$JSON_FILE")
 
 for u in "${users[@]}"
 do
-    useradd -m "$u" 2>/dev/null
+    #create user with home directory and bash shell
+    useradd -m -s /bin/bash "$u" 2>/dev/null
+
+    #set default password
     echo "$u:Password123" | chpasswd
+
+    mkdir -p /home/"$u"
+    chown -R "$u":"$u" /home/"$u"
+
+    #create a default .bashrc if missing
+    if [ ! -f "/home/$u/.bashrc" ]; then
+        cp /etc/skel/.bashrc /home/"$u"/.bashrc
+        chown "$u":"$u" /home/"$u"/.bashrc
+    fi
+
+    #set prompt to user@host:dir$
+    echo 'PS1="\u@\h:\w$ "' >> /home/"$u"/.bashrc
+
 done
 
-echo "users created from json"
+echo "users created successfully"
