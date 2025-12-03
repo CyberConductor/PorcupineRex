@@ -23,7 +23,6 @@ RUN echo 'export PROMPT_COMMAND="history -a"' >> /home/ho/.bashrc \
  && chown ho:ho /home/ho/.bashrc
 
 # install required tools
-
 RUN apt-get update \
  && apt-get install -y openssh-server rsyslog curl ca-certificates \
  && mkdir /var/run/sshd
@@ -33,18 +32,22 @@ COPY users.json /usr/local/etc/users.json
 COPY create_users.sh /usr/local/bin/create_users.sh
 COPY put_users_files.sh /usr/local/bin/put_users_files.sh
 COPY detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
+
+# copy attack monitor script
+COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
+
 # set executable permissions
 RUN chmod +x /usr/local/bin/create_users.sh \
- && chmod +x /usr/local/bin/put_users_files.sh
+ && chmod +x /usr/local/bin/put_users_files.sh \
+ && chmod +x /usr/local/bin/detect_bruteforce.sh \
+ && chmod +x /usr/local/bin/attack_monitor.sh
 
-RUN chmod +x /usr/local/bin/detect_bruteforce.sh
-# run scripts during build
+# run setup scripts during build
 RUN ["/usr/local/bin/create_users.sh"]
 RUN ["/usr/local/bin/put_users_files.sh"]
 
-
-# set default working directory and user
+# default working directory and user
 WORKDIR /home/ho
 
-# run bruteforce detection in background and then switch to ho
-CMD bash -c "/usr/local/bin/detect_bruteforce.sh & exec su - ho"
+# run bruteforce detection and attack monitor, then switch to ho
+CMD bash -c "/usr/local/bin/detect_bruteforce.sh & /usr/local/bin/attack_monitor.sh & exec su - ho"
