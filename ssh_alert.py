@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+
+#should be saved in /usr/local/bin/sendtl.py
 import requests
 import os
 from datetime import datetime, timedelta
