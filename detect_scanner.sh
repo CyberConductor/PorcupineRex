@@ -2,8 +2,8 @@
 
 # הגדרות
 LOG_FILE="/var/log/auth.log"
-BOT_TOKEN="example"
-CHAT_ID="example"
+BOT_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
+CHAT_ID="7444335759"
 THRESHOLD=10
 TIME_WINDOW=30
 
