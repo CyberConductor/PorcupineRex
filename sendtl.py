@@ -23,11 +23,11 @@ remote = os.getenv("PAM_RHOST", "unknown")
 pam_type = os.getenv("PAM_TYPE", "")
 now = datetime.now().strftime("%Y %m %d, %H:%M:%S")
 
-# Successful login
+#
 if pam_type == "open_session":
     send(f"SSH login detected.\nUser: {user}\nFrom: {remote}\nTime: {now}")
 
-# Failed attempts come as pam_type == "auth"
+#failed 
 else:
     attempts +=1
 
