@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LOG_FILE="/var/log/auth.log"
-BOT_TOKEN="8317853350:AAHD_Hhh6MvkTK2iJVlQxDhVQY1yj2qcVl8"
+BOT_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
 CHAT_ID="7444335759"
 THRESHOLD=2 # for each 30 seconds
 

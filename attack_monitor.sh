@@ -3,8 +3,8 @@
 LOGFILE="/var/log/attack_monitor.log"
 
 ### telegram config ###
-TELEGRAM_TOKEN="YOUR_BOT_TOKEN"
-CHAT_ID="YOUR_CHAT_ID"
+TELEGRAM_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
+CHAT_ID="7444335759"
 
 send_telegram()
 {
