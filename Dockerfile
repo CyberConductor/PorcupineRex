@@ -14,15 +14,15 @@ RUN useradd -m -s /bin/bash ho \
  && mkdir -p /home/ho \
  && chown -R ho:ho /home/ho
 
-# honeypot logs directory
+#honeypot logs directory
 RUN mkdir -p /honeypot-logs \
  && touch /honeypot-logs/commands.log \
  && chown root:root /honeypot-logs \
- && chmod 733 /honeypot-logs \
- && chown root:root /honeypot-logs/commands.log \
- && chmod 622 /honeypot-logs/commands.log
+ && chmod 755 /honeypot-logs \
+ && chown ho:ho /honeypot-logs/commands.log \
+ && chmod 644 /honeypot-logs/commands.log
 
-# attack monitor log file
+ #attack monitor log file
 RUN touch /var/log/attack_monitor.log \
  && chmod 644 /var/log/attack_monitor.log
 
