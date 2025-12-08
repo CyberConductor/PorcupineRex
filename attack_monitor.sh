@@ -176,7 +176,6 @@ do
 done
 
 
-#!/bin/bash
 
 LOGFILE="/var/log/attack_monitor.log"
 
