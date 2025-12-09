@@ -41,33 +41,35 @@ done
 
 tail -F "$COMMAND_LOG" | while read -r line
 do
-    # Extract just the command part (everything after the timestamp)
     command=$(echo "$line" | sed 's/^#[0-9]* //')
-    
-    suspicious_patterns="
-su
-sudo
-chmod
-chown
-id
-whoami
-uname
-ls
-wget
-curl
-ssh
-gcc
-python
-scp
-cat
-shadow
-root
-ssh_host
-    "
 
-    for pattern in $suspicious_patterns; do
-        if echo "$command" | grep -qw "$pattern"; then
-            log_alert "Suspicious command: $command"
+    declare -A categories=(
+        ["su"]="Privilege Escalation"
+        ["sudo"]="Privilege Escalation"
+        ["chmod"]="Privilege Escalation Attempt"
+        ["chown"]="Privilege Escalation Attempt"
+        ["id"]="System Info"
+        ["whoami"]="User Info"
+        ["uname"]="System Info"
+        ["ls"]="Files lookup"
+        ["wget"]="Suspicious Download"
+        ["curl"]="Suspicious Download"
+        ["ssh"]="Lateral Movement"
+        ["gcc"]="Compilation Activity"
+        ["python"]="Script Execution"
+        ["scp"]="File Transfer"
+        ["cat"]="File Access"
+        ["shadow"]="Unauthorized File Access"
+        ["root"]="Privilege Related"
+        ["ssh_host"]="SSH Configuration Access"
+    )
+
+    for pattern in "${!categories[@]}"
+    do
+        if echo "$command" | grep -qw "$pattern"
+        then
+            attack_type="${categories[$pattern]}"
+           log_alert $'Suspicious command detected.\nType: '"$attack_type"$'\nCommand: '"$command"
             break
         fi
     done
@@ -177,29 +179,3 @@ done
 
 
 
-LOGFILE="/var/log/attack_monitor.log"
-
-### telegram config ###
-TELEGRAM_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
-CHAT_ID="7444335759"
-
-send_alert()
-{
-    msg="$1"
-    curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
-        -d chat_id="${CHAT_ID}" \
-        -d text="${msg}"
-}
-
-# write to log
-
-# LOOP FOREVER
-#while true
-#do
-    #send_alert "Alert 1, system check triggered."
-    #send_alert "Alert 2, second notification."
-    #send_alert "Alert 3, final test message."
-
-    # Wait 60 seconds before sending again
-    #sleep 60
-#done
