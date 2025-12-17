@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 # install required tools
 RUN apt-get update \
- && apt-get install -y openssh-server rsyslog curl ca-certificates jq sudo \
+ && apt-get install -y openssh-server rsyslog curl ca-certificates jq sudo vsftpd \
  && mkdir /var/run/sshd
 
 # create honeypot user and logs directory
@@ -44,6 +44,7 @@ COPY put_users_files.sh /usr/local/bin/put_users_files.sh
 COPY detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
 COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
 COPY start.sh /start.sh
+COPY vsftpd.conf /etc/vsftpd.conf
 
 # make scripts executable
 RUN chmod +x /usr/local/bin/create_users.sh \
