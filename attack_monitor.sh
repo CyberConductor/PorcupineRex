@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LOGFILE="/var/log/attack_monitor.log"
-
+LAST_ALERT_FILE="/tmp/last_root_alert"
 ### telegram config ###
 TELEGRAM_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
 CHAT_ID="7444335759"
@@ -139,18 +139,33 @@ do
 ### rule 4, detect unexpected root shell
 ###########################################
 
-    ps aux | grep "bash" | grep "root" | grep -v "grep" > /tmp/root_shells_new
+ps -eo pid,user,cmd | awk '
+$2=="root" &&
+$3 ~ /bash/ &&
+$1 != 1 &&
+$3 !~ /start.sh/ &&
+$3 !~ /sshd/ &&
+$3 !~ /vsftpd/
+' > /tmp/root_shells_new
 
-    if [ ! -f /tmp/root_shells_old ]; then
-        cp /tmp/root_shells_new /tmp/root_shells_old
-    else
-        diff_output=$(diff /tmp/root_shells_old /tmp/root_shells_new)
-        if [ "$diff_output" != "" ]; then
+if [ ! -f /tmp/root_shells_old ]; then
+    cp /tmp/root_shells_new /tmp/root_shells_old
+else
+    diff_output=$(diff /tmp/root_shells_old /tmp/root_shells_new)
+
+    if [ "$diff_output" != "" ]; then
+        now=$(date +%s)
+        last=$(cat "$LAST_ALERT_FILE" 2>/dev/null || echo 0)
+
+        if [ $((now - last)) -gt 30 ]; then
             log_alert "Unexpected root shell detected"
             log_alert "$diff_output"
-            cp /tmp/root_shells_new /tmp/root_shells_old
+            echo "$now" > "$LAST_ALERT_FILE"
         fi
+
+        cp /tmp/root_shells_new /tmp/root_shells_old
     fi
+fi
 
 
 ###########################################
