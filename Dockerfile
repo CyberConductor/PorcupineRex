@@ -2,7 +2,7 @@ FROM ubuntu:latest
 
 # install required tools
 RUN apt-get update \
- && apt-get install -y openssh-server rsyslog curl ca-certificates jq sudo vsftpd \
+ && apt-get install -y openssh-server rsyslog curl ca-certificates jq sudo vsftpd libpam0g \
  && mkdir /var/run/sshd
 
 # create honeypot user and logs directory
@@ -46,6 +46,11 @@ COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
 COPY start.sh /start.sh
 COPY vsftpd.conf /etc/vsftpd.conf
 
+
+# ensure PAM directory and vsftpd PAM config exist
+RUN mkdir -p /etc/pam.d \
+ && echo "auth    required pam_unix.so" > /etc/pam.d/vsftpd \
+ && echo "account required pam_unix.so" >> /etc/pam.d/vsftpd
 # make scripts executable
 RUN chmod +x /usr/local/bin/create_users.sh \
  && chmod +x /usr/local/bin/put_users_files.sh \
