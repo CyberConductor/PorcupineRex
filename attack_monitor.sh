@@ -4,7 +4,7 @@ LOGFILE="/var/log/attack_monitor.log"
 LAST_ALERT_FILE="/tmp/last_root_alert"
 ### telegram config ###
 TELEGRAM_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
-CHAT_ID="7444335759"
+CHAT_ID="-1003544348135"
 
 
 send_telegram()
@@ -28,7 +28,7 @@ log_alert()
 ### wait for command log
 ###########################################
 
-COMMAND_LOG="/honeypot-logs/commands.log"
+COMMAND_LOG="/honeypot-logs/attacker_activity.log"
 
 while [ ! -f "$COMMAND_LOG" ]; do
     sleep 1
@@ -39,30 +39,38 @@ done
 ### background real time command monitor
 ###########################################
 
+declare -A categories=(
+    ["su"]="Privilege Escalation"
+    ["sudo"]="Privilege Escalation"
+    ["chmod"]="Privilege Escalation Attempt"
+    ["chown"]="Privilege Escalation Attempt"
+    ["id"]="System Info"
+    ["whoami"]="User Info"
+    ["uname"]="System Info"
+    ["ls"]="Files lookup"
+    ["wget"]="Suspicious Download"
+    ["curl"]="Suspicious Download"
+    ["ssh"]="Lateral Movement"
+    ["gcc"]="Compilation Activity"
+    ["python"]="Script Execution"
+    ["scp"]="File Transfer"
+    ["cat"]="File Access"
+    ["shadow"]="Unauthorized File Access"
+    ["root"]="Privilege Related"
+    ["ssh_host"]="SSH Configuration Access"
+)
+
 tail -F "$COMMAND_LOG" | while read -r line
 do
-    command=$(echo "$line" | sed 's/^#[0-9]* //')
+    if [[ "$line" =~ ^# ]]; then
+    continue
+    fi
 
-    declare -A categories=(
-        ["su"]="Privilege Escalation"
-        ["sudo"]="Privilege Escalation"
-        ["chmod"]="Privilege Escalation Attempt"
-        ["chown"]="Privilege Escalation Attempt"
-        ["id"]="System Info"
-        ["whoami"]="User Info"
-        ["uname"]="System Info"
-        ["ls"]="Files lookup"
-        ["wget"]="Suspicious Download"
-        ["curl"]="Suspicious Download"
-        ["ssh"]="Lateral Movement"
-        ["gcc"]="Compilation Activity"
-        ["python"]="Script Execution"
-        ["scp"]="File Transfer"
-        ["cat"]="File Access"
-        ["shadow"]="Unauthorized File Access"
-        ["root"]="Privilege Related"
-        ["ssh_host"]="SSH Configuration Access"
-    )
+    #skip empty line of content
+    [[ -z "$line" ]] && continue
+
+    command="$line"
+    #echo "$command" | python3 parse_command.py 
 
     for pattern in "${!categories[@]}"
     do
