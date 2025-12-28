@@ -16,11 +16,11 @@ RUN useradd -m -s /bin/bash ho \
 
 #honeypot logs directory
 RUN mkdir -p /honeypot-logs \
- && touch /honeypot-logs/commands.log \
+ && touch /honeypot-logs/attacker_activity.log \
  && chown root:root /honeypot-logs \
  && chmod 755 /honeypot-logs \
- && chown ho:ho /honeypot-logs/commands.log \
- && chmod 644 /honeypot-logs/commands.log
+ && chown ho:ho /honeypot-logs/attacker_activity.log \
+ && chmod 644 /honeypot-logs/attacker_activity.log
 
  #attack monitor log file
 RUN touch /var/log/attack_monitor.log \
@@ -30,11 +30,8 @@ RUN touch /var/log/attack_monitor.log \
 RUN cp /etc/skel/.bashrc /home/ho/.bashrc \
  && cp /etc/skel/.profile /home/ho/.profile \
  && echo 'shopt -s histappend' >> /home/ho/.bashrc \
- && echo 'export HISTFILE=/honeypot-logs/commands.log' >> /home/ho/.bashrc \
  && echo 'export HISTSIZE=50000' >> /home/ho/.bashrc \
  && echo 'export HISTFILESIZE=50000' >> /home/ho/.bashrc \
- && echo 'export HISTTIMEFORMAT="#%s "' >> /home/ho/.bashrc \
- && echo 'export PROMPT_COMMAND="history -a; history -c; history -r"' >> /home/ho/.bashrc \
  && chown ho:ho /home/ho/.bashrc /home/ho/.profile
 
 # copy JSON and scripts
@@ -42,7 +39,7 @@ COPY users.json /usr/local/etc/users.json
 COPY create_users.sh /usr/local/bin/create_users.sh
 COPY put_users_files.sh /usr/local/bin/put_users_files.sh
 COPY detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
-COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
+COPY attack_monitor.sh /usr/local/bin/attaּck_monitor.sh
 COPY start.sh /start.sh
 COPY vsftpd.conf /etc/vsftpd.conf
 
@@ -67,3 +64,14 @@ WORKDIR /home/ho
 
 # entrypoint script to start background scripts and drop into ho
 ENTRYPOINT ["/start.sh"]
+
+# save the hacker info
+RUN echo '
+CLIENT_IP=$(echo "$SSH_CONNECTION" | awk "{print \$1}")
+
+trap "
+trap - DEBUG
+echo \"\$(date +%s)|\$CLIENT_IP|\$\$|\$(id -u)|\$PWD|\$BASH_COMMAND\" >> /honeypot-logs/attacker_activity.log
+trap DEBUG
+" DEBUG
+' >> /home/ho/.bashrc
