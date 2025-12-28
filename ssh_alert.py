@@ -6,11 +6,13 @@ import requests
 import os
 from datetime import datetime, timedelta
 import json
-
+from dotenv import load_dotenv
 
 ATTEMPTS = 0
-TOKEN = "8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
-CHAT_ID = "7444335759"
+load_dotenv()
+
+TOKEN = os.getenv("TELEGRAM_TOKEN")
+CHAT_ID = "-1003544348135"
 def send(msg):
     try:
         requests.post(
