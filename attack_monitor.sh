@@ -3,7 +3,9 @@
 LOGFILE="/var/log/attack_monitor.log"
 LAST_ALERT_FILE="/tmp/last_root_alert"
 ### telegram config ###
-TELEGRAM_TOKEN="REDACTED"
+if [ -f .env ]; then
+    export $(grep -v '^#' .env | xargs)
+fi
 CHAT_ID="-1003544348135"
 
 
