@@ -11,7 +11,7 @@ db = client["honeypot"]
 hackers_col = db["hackers"]
 
 # --- paths ---
-LOG_DIR = "/var/honeypot-session-logs"
+LOG_DIR = "/var/log/attack_monitor.log"
 
 
 def parse_timestamp(ts_str):
@@ -72,7 +72,6 @@ def main():
             process_csv_file(file_path)
             os.remove(file_path)  # delete only after successful upload
         except Exception as e:
-            # intentionally silent or log elsewhere
             pass
 
 
