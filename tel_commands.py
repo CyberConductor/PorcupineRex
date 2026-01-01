@@ -2,9 +2,11 @@ import requests
 import time
 from pymongo import MongoClient
 import datetime
+from dotenv import load_dotenv
 
+load_dotenv()
 
-BOT_TOKEN = "REDACTED"
+TOKEN = os.getenv("TELEGRAM_TOKEN")
 BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 MONGO_URI = "REDACTED"
