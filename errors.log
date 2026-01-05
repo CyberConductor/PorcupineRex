@@ -1,0 +1,13 @@
+Jan 1 14:12:01 server1 kernel: [018273.719442] CPU0: Core temperature above threshold, cpu clock throttled
+Jan 2 14:12:05 server1 systemd[1]: Failed to start Apache Web Server: Unit apache2.service not found.
+Jan 2 14:12:10 server1 sshd[0007]: Failed password for invalid user admin from 192.168.1.105 port 54321 ssh2
+Jan 2 14:12:15 server1 CRON[2001]: (root) CMD (/usr/local/bin/backup.sh)
+Jan 2 14:12:16 server1 CRON[2001]: pam_unix(cron:session): session opened for user root by (uid=0)
+Jan 2 14:12:20 server1 CRON[2001]: pam_unix(cron:session): session closed for user root
+Jan 2 14:12:30 server1 kernel: [018273.719442] EXT4-fs error (device sda1): ext4_find_entry:1452: inode #12345: comm bash: reading directory lblock 0
+Jan 2 14:12:35 server1 systemd[1]: Starting PostgreSQL Database Server...
+Jan 2 14:12:36 server1 postgres[0877]: FATAL:  password authentication failed for user postgres
+Jan 2 14:12:40 server1 systemd[1]: postgresql.service: Failed with result 'exit-code'.
+Jan 2 14:12:45 server1 kernel: [018273.719442] Out of memory: Kill process 5678 (java) score 102 or sacrifice child
+Jan 2 14:12:50 server1 kernel: [018273.719442] Killed process 4444 (java) total-vm:2048000kB, anon-rss:1024000kB, file-rss:0kB
+Jan 2 14:12:55 server1 NetworkManager[0912]: <warn>  [018273.719442] dhcp4 (eth0): request timed out
