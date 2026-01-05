@@ -9,5 +9,5 @@ Jan 2 14:12:35 server1 systemd[1]: Starting PostgreSQL Database Server...
 Jan 2 14:12:36 server1 postgres[0877]: FATAL:  password authentication failed for user postgres
 Jan 2 14:12:40 server1 systemd[1]: postgresql.service: Failed with result 'exit-code'.
 Jan 2 14:12:45 server1 kernel: [018273.719442] Out of memory: Kill process 5678 (java) score 102 or sacrifice child
-Jan 2 14:12:50 server1 kernel: [018273.719442] Killed process 4444 (java) total-vm:2048000kB, anon-rss:1024000kB, file-rss:0kB
+Jan 2 14:12:50 server1 kernel: [018273.719442] Killed process 4444 (python3) total-vm:2048000kB, anon-rss:1024000kB, file-rss:0kB
 Jan 2 14:12:55 server1 NetworkManager[0912]: <warn>  [018273.719442] dhcp4 (eth0): request timed out
