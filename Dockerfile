@@ -38,10 +38,11 @@ RUN cp /etc/skel/.bashrc /home/ho/.bashrc \
 COPY users.json /usr/local/etc/users.json
 COPY create_users.sh /usr/local/bin/create_users.sh
 COPY put_users_files.sh /usr/local/bin/put_users_files.sh
-COPY detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
-COPY attack_monitor.sh /usr/local/bin/attaּck_monitor.sh
+COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
 COPY start.sh /start.sh
 COPY vsftpd.conf /etc/vsftpd.conf
+COPY errors.log /usr/local/share/errors.log
+COPY inject_errors.sh /usr/local/bin/inject_errors.sh
 
 
 # ensure PAM directory and vsftpd PAM config exist
@@ -51,8 +52,8 @@ RUN mkdir -p /etc/pam.d \
 # make scripts executable
 RUN chmod +x /usr/local/bin/create_users.sh \
  && chmod +x /usr/local/bin/put_users_files.sh \
- && chmod +x /usr/local/bin/detect_bruteforce.sh \
  && chmod +x /usr/local/bin/attack_monitor.sh \
+ && chmod +x /usr/local/bin/inject_errors.sh \
  && chmod +x /start.sh
 
 # run user creation and place fake files
@@ -66,12 +67,11 @@ WORKDIR /home/ho
 ENTRYPOINT ["/start.sh"]
 
 # save the hacker info
-RUN echo '
-CLIENT_IP=$(echo "$SSH_CONNECTION" | awk "{print \$1}")
-
-trap "
-trap - DEBUG
-echo \"\$(date +%s)|\$CLIENT_IP|\$\$|\$(id -u)|\$PWD|\$BASH_COMMAND\" >> /honeypot-logs/attacker_activity.log
-trap DEBUG
-" DEBUG
-' >> /home/ho/.bashrc
+RUN cat <<'EOF' >> /home/ho/.bashrc
+# log successful ssh login
+if [ -n "$SSH_CLIENT" ]; then
+    IP=$(echo "$SSH_CLIENT" | awk '{print $1}')
+    PORT=$(echo "$SSH_CLIENT" | awk '{print $3}')
+    echo "$(date '+%b %d %H:%M:%S') server1 sshd[$$]: Accepted password for ho from $IP port $PORT ssh2" >> /var/log/auth.log
+fi
+EOF

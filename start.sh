@@ -1,11 +1,16 @@
 #!/bin/bash
 
-# start monitoring scripts
-/usr/local/bin/attack_monitor.sh &
-/usr/local/bin/detect_bruteforce.sh &
+sleep 5
+#monitoring scripts:
 
-# start ftp
+# monitoring scripts
+nohup /usr/local/bin/attack_monitor.sh >/dev/null 2>&1 &
+nohup /usr/local/bin/detect_bruteforce.sh >/dev/null 2>&1 &
+
+# ftp
 /usr/sbin/vsftpd /etc/vsftpd.conf &
 
-# start ssh daemon (foreground)
-/usr/sbin/sshd -D
+#shell:
+exec /bin/bash
+# keep bash alive as pid 1
+exec /bin/bash -c "trap : TERM INT; while true; do sleep 3600; done"
