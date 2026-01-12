@@ -2,6 +2,7 @@ import os
 import csv
 import datetime
 from pymongo import MongoClient
+import datetime
 
 # --- MongoDB config ---
 MONGO_URI = "mongodb+srv://kalaiboaz_db_user:XUV3rthRmubjnuHG@honeypot.nyvgpyd.mongodb.net/"
@@ -11,7 +12,7 @@ db = client["honeypot"]
 hackers_col = db["hackers"]
 
 # --- paths ---
-LOG_DIR = "/var/honeypot-session-logs"
+LOG_DIR = "/var/log/auth.log"
 
 
 def parse_timestamp(ts_str):
@@ -56,6 +57,40 @@ def process_csv_file(csv_path):
     )
 
 
+
+def log_ssh_event(ip, user, success):
+    hacker = hackers_col.find_one({"ip": ip})
+
+    if not hacker:
+        hacker_id = hackers_col.insert_one({
+            "ip": ip,
+            "first_seen": datetime.datetime.utcnow(),
+            "sessions": [],
+            "failed_attempts": 0
+        }).inserted_id
+    else:
+        hacker_id = hacker["_id"]
+
+    event = {
+        "time": datetime.datetime.utcnow(),
+        "user": user,
+        "success": success
+    }
+
+    update = {"$push": {"sessions": event}}
+
+    if not success:
+        update["$inc"] = {"failed_attempts": 1}
+
+    hackers_col.update_one(
+        {"_id": hacker_id},
+        update
+    )
+
+    return hackers_col.find_one({"_id": hacker_id})["failed_attempts"]
+
+
+
 def main():
     if not os.path.isdir(LOG_DIR):
         return
@@ -72,7 +107,6 @@ def main():
             process_csv_file(file_path)
             os.remove(file_path)  # delete only after successful upload
         except Exception as e:
-            # intentionally silent or log elsewhere
             pass
 
 

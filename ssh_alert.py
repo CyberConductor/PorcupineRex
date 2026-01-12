@@ -1,21 +1,23 @@
 #!/usr/bin/env python3
+# saved as /usr/local/bin/sendtl.py
 
-
-#should be saved in /usr/local/bin/sendtl.py
 import requests
 import os
-from datetime import datetime, timedelta
-import json
+from datetime import datetime
+from dotenv import load_dotenv
+import upload_dbs_to_mongo
 
+load_dotenv()
 
-ATTEMPTS = 0
-TOKEN = "8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
-CHAT_ID = "7444335759"
+TOKEN = os.getenv("TELEGRAM_TOKEN")
+CHAT_ID = "-1003544348135"
+
 def send(msg):
     try:
         requests.post(
             f"https://api.telegram.org/bot{TOKEN}/sendMessage",
-            data={"chat_id": CHAT_ID, "text": msg}
+            data={"chat_id": CHAT_ID, "text": msg},
+            timeout=3
         )
     except:
         pass
@@ -23,16 +25,34 @@ def send(msg):
 user = os.getenv("PAM_USER", "unknown")
 remote = os.getenv("PAM_RHOST", "unknown")
 pam_type = os.getenv("PAM_TYPE", "")
-now = datetime.now().strftime("%Y %m %d, %H:%M:%S")
+now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-#
 if pam_type == "open_session":
-    send(f"SSH login detected.\nUser: {user}\nFrom: {remote}\nTime: {now}")
+    send(
+        f"SSH login detected\n"
+        f"User: {user}\n"
+        f"From: {remote}\n"
+        f"Time: {now}"
+    )
 
-#failed 
+    upload_dbs_to_mongo.log_ssh_event(
+        ip=remote,
+        user=user,
+        success=True
+    )
+
 else:
-    attempts +=1
+    failed_count = upload_dbs_to_mongo.log_ssh_event(
+        ip=remote,
+        user=user,
+        success=False
+    )
 
-if (attempts == 5):
-    send(f"Bruteforce attack detected!\nUser: {user}\nFrom: {remote}\nTime: {now}")
-    attempts = 0
+    if failed_count >= 5:
+        send(
+            f"Bruteforce attack detected\n"
+            f"User: {user}\n"
+            f"From: {remote}\n"
+            f"Failed attempts: {failed_count}\n"
+            f"Time: {now}"
+        )
