@@ -60,6 +60,11 @@ declare -A categories=(
     ["shadow"]="Unauthorized File Access"
     ["root"]="Privilege Related"
     ["ssh_host"]="SSH Configuration Access"
+    ["find / -perm"]="SUID Enumeration"
+    ["getcap"]="Capabilities Enumeration"
+    ["-4000"]="SUID Enumeration"
+    ["-2000"]="SGID Enumeration"
+
 )
 
 tail -F "$COMMAND_LOG" | while read -r line
@@ -81,6 +86,16 @@ do
             attack_type="${categories[$pattern]}"
            log_alert $'Suspicious command detected.\nType: '"$attack_type"$'\nCommand: '"$command"
             break
+        fi
+
+        if echo "$command" | grep -Eq 'export PATH=|PATH=.*:|PATH=/tmp'; 
+        then
+            log_alert $'Possible PATH hijacking attempt\nCommand: '"$command"
+        fi
+
+        if echo "$command" | grep -Eq 'LD_PRELOAD|LD_LIBRARY_PATH'; 
+        then
+            log_alert $'SUID environment abuse detected (LD_*)\nCommand: '"$command"
         fi
     done
 done &
@@ -201,6 +216,3 @@ fi
 
     sleep 5
 done
-
-
-
