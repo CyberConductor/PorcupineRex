@@ -4,6 +4,7 @@ import time
 from pymongo import MongoClient
 import datetime
 from dotenv import load_dotenv
+import ip_info
 
 load_dotenv()
 
@@ -71,11 +72,18 @@ def handle_message(message):
     elif text.startswith("/attacker "):
         ip = text.split(" ", 1)[1]
         h = hackers_col.find_one({"ip": ip})
-
+        ip_details(ip)
         if not h:
-            send_message(chat_id, f"No data for {ip}")
+            send_message(chat_id, f"No result for {ip}")
         else:
             send_message(chat_id, format_hacker(h))
+            result = ip_details(ip)
+            print("IP:", result["query"])
+            print("Country:", result["country"])
+            print("City:", result["city"])
+            print("ISP:", result["isp"])
+            print("Latitude:", result["lat"])
+            print("Longitude:", result["lon"])
 
     else:
         send_message(chat_id, "Unknown command")
