@@ -6,9 +6,11 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 import upload_dbs_to_mongo
-
+import ip_blocker
 load_dotenv()
 
+BLOCK_TIME = 500
+BLOCK_COUNT = 5
 TOKEN = os.getenv("TELEGRAM_TOKEN")
 CHAT_ID = "-1003544348135"
 
@@ -48,11 +50,11 @@ else:
         success=False
     )
 
-    if failed_count >= 5:
+    if failed_count >= BLOCK_COUNT and not ip_blocker.is_ip_blocked(remote):
+        ip_blocker.block_ip_temporarily(remote, BLOCK_TIME)
         send(
             f"Bruteforce attack detected\n"
-            f"User: {user}\n"
-            f"From: {remote}\n"
+            f"User: {user} From {remote} has been blocked\n"
             f"Failed attempts: {failed_count}\n"
             f"Time: {now}"
         )

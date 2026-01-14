@@ -11,7 +11,7 @@ load_dotenv()
 BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
 BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-MONGO_URI = "mongodb+srv://kalaiboaz_db_user:XUV3rthRmubjnuHG@honeypot.nyvgpyd.mongodb.net/"
+MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["honeypot"]
 hackers_col = db["hackers"]
@@ -72,12 +72,12 @@ def handle_message(message):
     elif text.startswith("/attacker "):
         ip = text.split(" ", 1)[1]
         h = hackers_col.find_one({"ip": ip})
-        ip_details(ip)
+        ip_info.ip_details(ip)
         if not h:
             send_message(chat_id, f"No result for {ip}")
         else:
             send_message(chat_id, format_hacker(h))
-            result = ip_details(ip)
+            result = ip_info.ip_details(ip)
             print("IP:", result["query"])
             print("Country:", result["country"])
             print("City:", result["city"])
