@@ -27,11 +27,13 @@ RUN touch /var/log/attack_monitor.log \
  && chmod 644 /var/log/attack_monitor.log
 
 # configure bash history logging for ho
+# configure bash history logging for ho
 RUN cp /etc/skel/.bashrc /home/ho/.bashrc \
  && cp /etc/skel/.profile /home/ho/.profile \
  && echo 'shopt -s histappend' >> /home/ho/.bashrc \
  && echo 'export HISTSIZE=50000' >> /home/ho/.bashrc \
  && echo 'export HISTFILESIZE=50000' >> /home/ho/.bashrc \
+ && echo 'export PROMPT_COMMAND='\''history 1 | sed "s/^ *[0-9]\+ *//" >> /honeypot-logs/attacker_activity.log'\''' >> /home/ho/.bashrc \
  && chown ho:ho /home/ho/.bashrc /home/ho/.profile
 
 # copy JSON and scripts
@@ -39,6 +41,7 @@ COPY users.json /usr/local/etc/users.json
 COPY create_users.sh /usr/local/bin/create_users.sh
 COPY put_users_files.sh /usr/local/bin/put_users_files.sh
 COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
+COPY .env /usr/local/bin/.env
 COPY start.sh /start.sh
 COPY vsftpd.conf /etc/vsftpd.conf
 COPY errors.log /usr/local/share/errors.log
@@ -60,6 +63,9 @@ RUN chmod +x /usr/local/bin/create_users.sh \
 RUN /usr/local/bin/create_users.sh \
  && /usr/local/bin/put_users_files.sh
 
+ RUN chown -R root:root /usr/local/bin \
+ && chmod 750 /usr/local/bin \
+ && chmod 600 /usr/local/bin/.env
 # working directory
 WORKDIR /home/ho
 

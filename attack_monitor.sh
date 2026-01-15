@@ -3,9 +3,12 @@
 LOGFILE="/var/log/attack_monitor.log"
 LAST_ALERT_FILE="/tmp/last_root_alert"
 ### telegram config ###
-if [ -f .env ]; then
-    export $(grep -v '^#' .env | xargs)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    export $(grep -v '^#' "$SCRIPT_DIR/.env" | xargs)
 fi
+
 CHAT_ID="-1003544348135"
 
 
