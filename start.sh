@@ -2,13 +2,16 @@
 
 sleep 5
 
-
-
-# Start monitoring scripts (already executable from Dockerfile)
+# start monitoring scripts in background
 nohup /usr/local/bin/attack_monitor.sh >/dev/null 2>&1 &
+nohup /usr/local/bin/detect_bruteforce.sh >/dev/null 2>&1 &
 
-# Start FTP
+# drop attacker into shell, must be last
+exec /bin/bash
+
+
+# start FTP
 /usr/sbin/vsftpd /etc/vsftpd.conf &
 
-# Keep container alive
-exec /bin/bash -c "trap : TERM INT; while true; do sleep 3600; done"
+# start SSH
+exec /usr/sbin/sshd -D
