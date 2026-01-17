@@ -11,6 +11,7 @@ send_telegram()
 {
     message="$1"
     curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
+        -d chat_id="${CHAT_ID}" \
         -d text="${message}" \
         >/dev/null 2>&1
 }
@@ -38,35 +39,41 @@ done
 ### background real time command monitor
 ###########################################
 
+declare -A categories=(
+    ["su"]="Privilege Escalation"
+    ["sudo"]="Privilege Escalation"
+    ["chmod"]="Privilege Escalation Attempt"
+    ["chown"]="Privilege Escalation Attempt"
+    ["id"]="System Info"
+    ["whoami"]="User Info"
+    ["uname"]="System Info"
+    ["ls"]="Files lookup"
+    ["wget"]="Suspicious Download"
+    ["curl"]="Suspicious Download"
+    ["ssh"]="Lateral Movement"
+    ["gcc"]="Compilation Activity"
+    ["python"]="Script Execution"
+    ["scp"]="File Transfer"
+    ["cat"]="File Access"
+    ["shadow"]="Unauthorized File Access"
+    ["root"]="Privilege Related"
+    ["ssh_host"]="SSH Configuration Access"
+    ["find / -perm"]="SUID Enumeration"
+    ["getcap"]="Capabilities Enumeration"
+    ["-4000"]="SUID Enumeration"
+    ["-2000"]="SGID Enumeration"
+)
+
 tail -F "$COMMAND_LOG" | while read -r line
 do
     # Extract just the command part (everything after the timestamp)
-    command=$(echo "$line" | sed 's/^#[0-9]* //')
-    
-    suspicious_patterns="
-su
-sudo
-chmod
-chown
-id
-whoami
-uname
-ls
-wget
-curl
-ssh
-gcc
-python
-scp
-cat
-shadow
-root
-ssh_host
-    "
+    raw=$(echo "$line" | sed 's/^#[0-9]* //')
+    cmd=$(echo "$raw" | awk '{print $1}')
 
-    for pattern in $suspicious_patterns; do
-        if echo "$command" | grep -qw "$pattern"; then
-            log_alert "Suspicious command: $command"
+    for pattern in "${!categories[@]}"; do
+        if [ "$cmd" = "$pattern" ]; then
+            attack_type="${categories[$pattern]}"
+            log_alert "Suspicious command: $cmd (Type: $attack_type)"
             break
         fi
     done
@@ -173,6 +180,3 @@ do
 
     sleep 5
 done
-
-
-
