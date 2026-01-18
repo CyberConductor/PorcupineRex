@@ -3,9 +3,7 @@ import os
 from datetime import datetime
 from pymongo import MongoClient
 
-# =========================
-# config
-# =========================
+
 
 LOG_FILE = "/honeypot-logs/attacker_activity.log"
 
@@ -15,9 +13,7 @@ COLLECTION_NAME = "commands"
 
 SESSION_ID = os.getenv("SESSION_ID", f"{os.uname().nodename}-{os.getpid()}")
 
-# =========================
-# mongo connection
-# =========================
+
 
 client = MongoClient(
     MONGO_URI,
@@ -27,9 +23,7 @@ client = MongoClient(
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
 
-# =========================
-# tail-like file reader
-# =========================
+
 
 def follow(file):
     file.seek(0, os.SEEK_END)
@@ -40,16 +34,12 @@ def follow(file):
             continue
         yield line.rstrip("\n")
 
-# =========================
-# main loop
-# =========================
 
 print("[*] command shipper started")
 
 with open(LOG_FILE, "r") as f:
     for line in follow(f):
 
-        # try to strip timestamp if your logger prefixes it
         parts = line.split(" ", 1)
         command = parts[1] if len(parts) == 2 else line
 
