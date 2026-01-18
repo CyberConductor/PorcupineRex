@@ -13,8 +13,13 @@ BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
-db = client["honeypot"]
-hackers_col = db["hackers"]
+
+DB = client["honeypot"]
+INFO_DB = DB["hackers"]
+
+COMMANDS_DB = DB["commands"]
+
+
 
 
 def get_updates(offset=None):
@@ -58,7 +63,7 @@ def handle_message(message):
     text = message.get("text", "").strip()
 
     if text == "/attackers":
-        hackers = hackers_col.find().sort("first_seen", -1).limit(5)
+        hackers = INFO_DB.find().sort("first_seen", -1).limit(5)
 
         msgs = []
         for h in hackers:
@@ -71,22 +76,37 @@ def handle_message(message):
 
     elif text.startswith("/attacker "):
         ip = text.split(" ", 1)[1]
-        h = hackers_col.find_one({"ip": ip})
-        ip_info.ip_details(ip)
+        h = INFO_DB.find_one({"ip": ip})
+        result = ip_info.ip_details(ip)
+        
         if not h:
             send_message(chat_id, f"No result for {ip}")
         else:
             send_message(chat_id, format_hacker(h))
-            result = ip_info.ip_details(ip)
-            print("IP:", result["query"])
-            print("Country:", result["country"])
-            print("City:", result["city"])
-            print("ISP:", result["isp"])
-            print("Latitude:", result["lat"])
-            print("Longitude:", result["lon"])
+        msg = (
+        f"IP: {result.get('query','N/A')}\n"
+        f"Country: {result.get('country','N/A')}\n"
+        f"City: {result.get('city','N/A')}\n"
+        f"ISP: {result.get('isp','N/A')}\n"
+        f"Latitude: {result.get('lat','N/A')}\n"
+        f"Longitude: {result.get('lon','N/A')}"
+        )
+        send_message(chat_id, msg)
+    elif text.startswith("/commands"):
+        docs = list(COMMANDS_DB.find().sort("timestamp", 1))
 
-    else:
-        send_message(chat_id, "Unknown command")
+        if not docs:
+            send_message(chat_id, "No commands found")
+            return
+
+        for doc in docs:
+            msg = (
+                f"Session: {doc.get('session_id')}\n"
+                f"Command: {doc.get('command')}\n"
+                f"Time: {doc.get('timestamp')}"
+            )
+            send_message(chat_id, msg)
+
 
 def main():
     offset = None
