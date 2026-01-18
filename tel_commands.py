@@ -2,7 +2,6 @@ import os
 import requests
 import time
 from pymongo import MongoClient
-import datetime
 from dotenv import load_dotenv
 import ip_info
 
