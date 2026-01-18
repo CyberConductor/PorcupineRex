@@ -2,9 +2,14 @@ FROM ubuntu:latest
 
 # install required tools (first logic + safe extra packages)
 RUN apt-get update \
- && apt-get install -y openssh-server rsyslog curl ca-certificates jq sudo vsftpd libpam0g \
+ && apt-get install -y \
+    openssh-server rsyslog curl ca-certificates jq sudo \
+    vsftpd libpam0g python3 python3-pip \
  && mkdir /var/run/sshd \
  && ssh-keygen -A
+
+RUN pip3 install pymongo --break-system-packages
+
 
 # create honeypot user and logs directory
 RUN groupadd honeypot \
@@ -40,6 +45,7 @@ RUN cp /etc/skel/.bashrc /home/ho/.bashrc \
 
 # copy original files
 COPY users.json /usr/local/etc/users.json
+COPY upload_attacks.py /usr/local/bin/upload_attacks.py
 COPY create_users.sh /usr/local/bin/create_users.sh
 COPY put_users_files.sh /usr/local/bin/put_users_files.sh
 COPY detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
@@ -62,6 +68,7 @@ RUN chmod +x /usr/local/bin/create_users.sh \
  && chmod +x /usr/local/bin/put_users_files.sh \
  && chmod +x /usr/local/bin/detect_bruteforce.sh \
  && chmod +x /usr/local/bin/attack_monitor.sh \
+ && chmod +x /usr/local/bin/upload_attacks.py \
  && chmod +x /usr/local/bin/inject_errors.sh \
  && chmod +x /start.sh
 
