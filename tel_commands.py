@@ -4,6 +4,7 @@ import time
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import ip_info
+from ip_blocker import block_ip_temporarily, is_ip_blocked
 
 load_dotenv()
 
@@ -105,7 +106,28 @@ def handle_message(message):
                 f"Time: {doc.get('timestamp')}"
             )
             send_message(chat_id, msg)
-
+    elif text.startswith("/help"):
+        help_text = (
+            "/attackers - List recent attackers\n"
+            "/attacker <IP> - Get details about a specific attacker\n"
+            "/commands - List executed commands\n"
+        )
+        send_message(chat_id, help_text)
+    elif text.startswith("/start"):
+        welcome_text = (
+            "Welcome to the Honeypot Telegram Bot!\n"
+            "Use /help to see available commands."
+        )
+        send_message(chat_id, welcome_text)
+    elif text.startswith("/block "):
+        ip = text.split(" ", 1)[1]
+        if not is_ip_blocked(ip):
+            block_ip_temporarily(ip)
+            send_message(chat_id, f"IP {ip} has been blocked.")
+        else:
+            send_message(chat_id, "error blocking IP.")
+    else:
+        send_message(chat_id, "Unknown command. Use /help to see available commands.")
 
 def main():
     offset = None
