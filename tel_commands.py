@@ -4,7 +4,6 @@ import time
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import ip_info
-from ip_blocker import block_ip_temporarily, is_ip_blocked
 
 load_dotenv()
 
@@ -16,10 +15,8 @@ client = MongoClient(MONGO_URI)
 
 DB = client["honeypot"]
 INFO_DB = DB["hackers"]
-
 COMMANDS_DB = DB["commands"]
-
-
+BLOCKED_DB = DB["blocked_ips"]
 
 
 def get_updates(offset=None):
@@ -30,13 +27,13 @@ def get_updates(offset=None):
     r = requests.get(f"{BASE_URL}/getUpdates", params=params, timeout=10)
     return r.json()
 
+
 def send_message(chat_id, text):
     payload = {
         "chat_id": chat_id,
         "text": text
     }
     requests.post(f"{BASE_URL}/sendMessage", json=payload, timeout=10)
-
 
 
 def format_hacker(h):
@@ -65,9 +62,7 @@ def handle_message(message):
     if text == "/attackers":
         hackers = INFO_DB.find().sort("first_seen", -1).limit(5)
 
-        msgs = []
-        for h in hackers:
-            msgs.append(format_hacker(h))
+        msgs = [format_hacker(h) for h in hackers]
 
         if not msgs:
             send_message(chat_id, "No attackers found")
@@ -84,14 +79,15 @@ def handle_message(message):
         else:
             send_message(chat_id, format_hacker(h))
         msg = (
-        f"IP: {result.get('query','N/A')}\n"
-        f"Country: {result.get('country','N/A')}\n"
-        f"City: {result.get('city','N/A')}\n"
-        f"ISP: {result.get('isp','N/A')}\n"
-        f"Latitude: {result.get('lat','N/A')}\n"
-        f"Longitude: {result.get('lon','N/A')}"
+            f"IP: {result.get('query','N/A')}\n"
+            f"Country: {result.get('country','N/A')}\n"
+            f"City: {result.get('city','N/A')}\n"
+            f"ISP: {result.get('isp','N/A')}\n"
+            f"Latitude: {result.get('lat','N/A')}\n"
+            f"Longitude: {result.get('lon','N/A')}"
         )
         send_message(chat_id, msg)
+
     elif text.startswith("/commands"):
         docs = list(COMMANDS_DB.find().sort("timestamp", 1))
 
@@ -106,28 +102,45 @@ def handle_message(message):
                 f"Time: {doc.get('timestamp')}"
             )
             send_message(chat_id, msg)
+
     elif text.startswith("/help"):
         help_text = (
             "/attackers - List recent attackers\n"
             "/attacker <IP> - Get details about a specific attacker\n"
             "/commands - List executed commands\n"
+            "/block <IP> - Schedule an IP to be blocked\n"
         )
         send_message(chat_id, help_text)
+
     elif text.startswith("/start"):
         welcome_text = (
             "Welcome to the Honeypot Telegram Bot!\n"
             "Use /help to see available commands."
         )
         send_message(chat_id, welcome_text)
+
     elif text.startswith("/block "):
         ip = text.split(" ", 1)[1]
-        if not is_ip_blocked(ip):
-            block_ip_temporarily(ip)
-            send_message(chat_id, f"IP {ip} has been blocked.")
-        else:
-            send_message(chat_id, "error blocking IP.")
+        now = int(time.time())
+        block_duration = 600  
+
+        # add IP to MongoDB for blocking
+        BLOCKED_DB.update_one(
+            {"ip": ip},
+            {"$set": {
+                "ip": ip,
+                "added_at": now,
+                "expires_at": now + block_duration,
+                "source": "telegram"
+            }},
+            upsert=True
+        )
+
+        send_message(chat_id, f"IP {ip} has been scheduled for blocking for {block_duration//60} minutes.")
+
     else:
         send_message(chat_id, "Unknown command. Use /help to see available commands.")
+
 
 def main():
     offset = None
@@ -143,6 +156,7 @@ def main():
                     handle_message(update["message"])
 
         time.sleep(1)
+
 
 if __name__ == "__main__":
     main()
