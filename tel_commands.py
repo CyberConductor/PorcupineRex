@@ -19,6 +19,9 @@ COMMANDS_DB = DB["commands"]
 BLOCKED_DB = DB["blocked_ips"]
 
 
+
+
+
 def get_updates(offset=None):
     params = {"timeout": 30}
     if offset is not None:
@@ -87,6 +90,33 @@ def handle_message(message):
             f"Longitude: {result.get('lon','N/A')}"
         )
         send_message(chat_id, msg)
+    elif text == "/attacks":
+        pipeline = [
+            {
+                "$group": {
+                    "_id": "$attack_type",
+                    "count": {"$sum": 1}
+                }
+            },
+            {
+                "$sort": {"count": -1}
+            }
+        ]
+
+        results = list(INFO_DB.aggregate(pipeline))
+
+        if not results:
+            send_message(chat_id, "No attacks recorded yet")
+            return
+
+        msg_lines = ["Attack statistics:\n"]
+
+        for r in results:
+            attack_type = r["_id"] if r["_id"] else "unknown"
+            count = r["count"]
+            msg_lines.append(f"{attack_type}: {count}")
+
+        send_message(chat_id, "\n".join(msg_lines))
 
     elif text.startswith("/commands"):
         docs = list(COMMANDS_DB.find().sort("timestamp", 1))
