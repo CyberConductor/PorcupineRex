@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Honeypot Dashboard</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      background: #0f172a;
+      color: #e5e7eb;
+    }
+
+    header {
+      padding: 20px 40px;
+      background: #020617;
+      border-bottom: 1px solid #1e293b;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .container {
+      padding: 30px 40px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: #020617;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+    }
+
+    .card h2 {
+      margin: 0;
+      font-size: 14px;
+      color: #94a3b8;
+    }
+
+    .card p {
+      font-size: 28px;
+      margin: 10px 0 0;
+      font-weight: bold;
+    }
+
+    .charts {
+      background: #020617;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #1e293b;
+      margin-bottom: 40px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #020617;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #1e293b;
+      text-align: left;
+    }
+
+    th {
+      background: #020617;
+      color: #94a3b8;
+      font-size: 13px;
+    }
+
+    tr:hover {
+      background: #020617;
+    }
+
+    .sessions {
+      font-size: 12px;
+      color: #cbd5f5;
+    }
+
+    .success {
+      color: #22c55e;
+    }
+
+    .fail {
+      color: #ef4444;
+    }
+  </style>
+</head>
+
+<body>
+<header>
+  <h1>Honeypot Security Dashboard</h1>
+</header>
+
+<div class="container">
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="card">
+      <h2>Total Attackers</h2>
+      <p id="totalAttackers">0</p>
+    </div>
+
+    <div class="card">
+      <h2>Total Failed Attempts</h2>
+      <p id="totalFails">0</p>
+    </div>
+
+    <div class="card">
+      <h2>Unique IPs</h2>
+      <p id="uniqueIps">0</p>
+    </div>
+  </div>
+
+  <!-- Chart -->
+  <div class="charts">
+    <canvas id="attackChart"></canvas>
+  </div>
+
+  <!-- Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>IP Address</th>
+        <th>First Seen</th>
+        <th>Failed Attempts</th>
+        <th>Sessions</th>
+      </tr>
+    </thead>
+    <tbody id="hackersTable"></tbody>
+  </table>
+
+</div>
+
+<script>
+async function loadData() {
+  const res = await fetch('/api/hackers');
+  const data = await res.json();
+
+  document.getElementById('totalAttackers').innerText = data.length;
+  document.getElementById('uniqueIps').innerText = new Set(data.map(h => h.ip)).size;
+  document.getElementById('totalFails').innerText =
+    data.reduce((sum, h) => sum + (h.failed_attempts || 0), 0);
+
+  const labels = [];
+  const values = [];
+
+  const table = document.getElementById('hackersTable');
+  table.innerHTML = '';
+
+  data.forEach(h => {
+    labels.push(h.ip);
+    values.push(h.failed_attempts || 0);
+
+    const sessionsHtml = (h.sessions || []).map(s =>
+      `<div class="sessions">
+        ${new Date(s.time).toLocaleString()} |
+        user: ${s.user} |
+        <span class="${s.success ? 'success' : 'fail'}">
+          ${s.success ? 'SUCCESS' : 'FAIL'}
+        </span>
+      </div>`
+    ).join('');
+
+    table.innerHTML += `
+      <tr>
+        <td>${h.ip}</td>
+        <td>${new Date(h.first_seen).toLocaleString()}</td>
+        <td>${h.failed_attempts || 0}</td>
+        <td>${sessionsHtml}</td>
+      </tr>
+    `;
+  });
+
+  new Chart(document.getElementById('attackChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Failed Attempts',
+        data: values,
+        backgroundColor: '#ef4444'
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        x: { ticks: { color: '#94a3b8' } },
+        y: { ticks: { color: '#94a3b8' } }
+      }
+    }
+  });
+}
+
+loadData();
+</script>
+
+</body>
+</html>
