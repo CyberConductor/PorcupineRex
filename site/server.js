@@ -17,32 +17,49 @@ async function start()
     await client.connect();
 
     const db = client.db("honeypot");
-    const hackers = db.collection("hackers");
 
     app.get("/", (req, res) =>
     {
         res.sendFile(path.join(__dirname, "index.html"));
     });
 
-  app.get("/api/hackers", async (req, res) => {
-  console.log("Request to /api/hackers received"); // <-- debug
-  try {
-    const client = new MongoClient(uri);
-    await client.connect();
-    console.log("MongoDB connected"); // <-- debug
+    app.get("/api/hackers", async (req, res) => {
+        console.log("Request to /api/hackers received");
+        try {
+            const client = new MongoClient(uri);
+            await client.connect();
+            console.log("MongoDB connected");
 
-    const db = client.db("honeypot");
-    const hackers = await db.collection("hackers").find({}).toArray();
-    console.log("Fetched data:", hackers.length, "records"); // <-- debug
+            const db = client.db("honeypot");
+            const hackers = await db.collection("hackers").find({}).toArray();
+            console.log("Fetched data:", hackers.length, "records");
 
-    await client.close();
-    res.json(hackers);
-  } catch (err) {
-    console.error("MongoDB error:", err); // <-- full error
-    res.status(500).json({ error: "Failed to fetch data from MongoDB" });
-  }
-});
+            await client.close();
+            res.json(hackers);
+        } catch (err) {
+            console.error("MongoDB error:", err);
+            res.status(500).json({ error: "Failed to fetch data from MongoDB" });
+        }
+    });
 
+    app.get("/api/commands", async (req, res) => {
+        console.log("Request to /api/commands received");
+        try {
+            const client = new MongoClient(uri);
+            await client.connect();
+            console.log("MongoDB connected for commands");
+
+            const db = client.db("honeypot");
+            const commands = await db.collection("commands").find({}).toArray();
+            console.log("Fetched commands:", commands.length, "records");
+
+            await client.close();
+            res.json(commands);
+        } catch (err) {
+            console.error("MongoDB error:", err);
+            res.status(500).json({ error: "Failed to fetch commands from MongoDB" });
+        }
+    });
 
     app.listen(PORT, () =>
     {
