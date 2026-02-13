@@ -91,7 +91,7 @@ def handle_message(message):
         )
         send_message(chat_id, msg)
     elif text == "/attacks":
-        pipeline = [
+        attack_display = [
             {
                 "$group": {
                     "_id": "$attack_type",
@@ -103,7 +103,7 @@ def handle_message(message):
             }
         ]
 
-        results = list(INFO_DB.aggregate(pipeline))
+        results = list(INFO_DB.aggregate(attack_display))
 
         if not results:
             send_message(chat_id, "No attacks recorded yet")
@@ -154,7 +154,6 @@ def handle_message(message):
         now = int(time.time())
         block_duration = 600  
 
-        # add IP to MongoDB for blocking
         BLOCKED_DB.update_one(
             {"ip": ip},
             {"$set": {
