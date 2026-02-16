@@ -51,6 +51,7 @@ COPY put_users_files.sh /usr/local/bin/put_users_files.sh
 COPY detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
 COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
 COPY dynamic_vuln.sh /usr/local/bin/dynamic_vuln.sh
+COPY del_detect.sh /usr/local/bin/del_detect.sh
 COPY start.sh /start.sh
 
 # copy additional files (no logic changes)
@@ -70,6 +71,7 @@ RUN chmod +x /usr/local/bin/create_users.sh \
  && chmod +x /usr/local/bin/detect_bruteforce.sh \
  && chmod +x /usr/local/bin/attack_monitor.sh \
  && chmod +x /usr/local/bin/dynamic_vuln.sh \
+ && chmod +x /usr/local/bin/del_detect.sh \
  && chmod +x /usr/local/bin/upload_attacks.py \
  && chmod +x /usr/local/bin/inject_errors.sh \
  && chmod +x /start.sh
