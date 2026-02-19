@@ -52,6 +52,7 @@ COPY detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
 COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
 COPY dynamic_vuln.sh /usr/local/bin/dynamic_vuln.sh
 COPY del_detect.sh /usr/local/bin/del_detect.sh
+COPY liveLog.sh /usr/local/bin/liveLog.sh
 COPY start.sh /start.sh
 
 # copy additional files (no logic changes)

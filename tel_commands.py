@@ -166,7 +166,34 @@ def handle_message(message):
         )
 
         send_message(chat_id, f"IP {ip} has been scheduled for blocking for {block_duration//60} minutes.")
+    elif text.startswith("/unblock "):
+        ip = text.split(" ", 1)[1]
+        BLOCKED_DB.delete_one({"ip": ip})
+        send_message(chat_id, f"IP {ip} has been removed from the block list.")
+    elif text.startswith("/isblocked "):
+        ip = text.split(" ", 1)[1]
+        if ip_blocker.is_ip_blocked(ip):
+            send_message(chat_id, f"IP {ip} is currently blocked.")
+        else:
+            send_message(chat_id, f"IP {ip} is not blocked.")
+    elif text.startswith("/blocklist"):
+        now = int(time.time())
+        blocked_ips = list(BLOCKED_DB.find({"expires_at": {"$gt": now}}))
 
+        if not blocked_ips:
+            send_message(chat_id, "No IPs are currently blocked.")
+            return
+
+        msg_lines = ["Currently blocked IPs:\n"]
+        for entry in blocked_ips:
+            ip = entry["ip"]
+            expires_in = entry["expires_at"] - now
+            msg_lines.append(f"{ip} (expires in {expires_in//60} minutes)")
+
+        send_message(chat_id, "\n".join(msg_lines))
+    elif text.startswith("/delete"):
+        send_message(chat_id, "Delete command received.")
+        send_message(chat_id, "Honeypot will be deleted in a minute.")
     else:
         send_message(chat_id, "Unknown command. Use /help to see available commands.")
 
