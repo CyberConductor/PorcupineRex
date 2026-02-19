@@ -1,8 +1,7 @@
 #!/bin/bash
 
-TELEGRAM_TOKEN="REDACTED"
+source /usr/local/bin/.env
 CHAT_ID="-1003544348135"
-
 send_alert() {
     curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage" \
         -d chat_id="$CHAT_ID" \

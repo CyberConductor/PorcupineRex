@@ -10,17 +10,15 @@ TIME_WINDOW=30
 STATE_DIR="/var/lib/scanner-detector"
 ATTEMPTS_FILE="$STATE_DIR/attempts.db"
 
-# בדיקת root
 if [ "$EUID" -ne 0 ]; then 
     echo "Error: Must run as root"
     exit 1
 fi
 
-# יצירת תיקייה
 mkdir -p "$STATE_DIR"
 > "$ATTEMPTS_FILE"
 
-# שליחת הודעה לטלגרם
+
 send_telegram() {
     local message=$1
     curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
@@ -29,7 +27,6 @@ send_telegram() {
 }
 
 
-# ספירת ניסיונות
 count_attempts() {
     local ip=$1
     local current_time=$(date +%s)
@@ -44,7 +41,6 @@ count_attempts() {
     echo "$count"
 }
 
-# ניקוי אוטומטי של ניסיונות ישנים
 cleanup_attempts() {
     local current_time=$(date +%s)
     local temp_file="${ATTEMPTS_FILE}.tmp"
@@ -56,13 +52,11 @@ cleanup_attempts() {
     mv "$temp_file" "$ATTEMPTS_FILE" 2>/dev/null
 }
 
-# עיבוד שורת log
 process_line() {
     local line=$1
     local ip=""
     local attack_type=""
     
-    # זיהוי סוגי התקפות
     if echo "$line" | grep -q "Did not receive identification string"; then
         ip=$(echo "$line" | grep -oP '\d+\.\d+\.\d+\.\d+' | tail -1)
         attack_type="Port Scanner"
@@ -76,37 +70,29 @@ process_line() {
     
     [ -z "$ip" ] && return
     
-    # הוספת ניסיון
     echo "${ip}:$(date +%s)" >> "$ATTEMPTS_FILE"
-    
-    # ספירה
+
     local count=$(count_attempts "$ip")
     echo "[ATTEMPT] $ip ($count/$THRESHOLD) - $attack_type"
-    
-    # התראה אם עבר סף
+
     if [ "$count" -eq "$THRESHOLD" ]; then
         send_telegram "⚠️ Scanner Alert: IP $ip reached $THRESHOLD attempts ($attack_type)"
         echo "[ALERT SENT] $ip"
     fi
-    
-    # ניקוי תקופתי
+
     local lines=$(wc -l < "$ATTEMPTS_FILE")
     [ "$lines" -gt 100 ] && cleanup_attempts
 }
 
-# ניקוי בעת יציאה
 cleanup_exit() {
     echo "Shutting down..."
     exit 0
 }
 
 trap cleanup_exit SIGINT SIGTERM
-
-# התחלה
 echo "Scanner Detector Started"
 echo "Threshold: $THRESHOLD attempts in $TIME_WINDOW seconds"
 
-# ניטור
 tail -F "$LOG_FILE" 2>/dev/null | while read -r line; do
     process_line "$line"
 done
