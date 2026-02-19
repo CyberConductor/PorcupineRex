@@ -2,11 +2,8 @@
 
 LOGFILE="/var/log/attack_monitor.log"
 
-### telegram config ###
-TELEGRAM_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
+source /usr/local/bin/.env
 CHAT_ID="-1003544348135"
-
-
 send_telegram()
 {
     message="$1"

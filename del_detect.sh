@@ -1,7 +1,8 @@
 #!/bin/bash
 
-TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
-API="https://api.telegram.org/bot$TOKEN"
+source /usr/local/bin/.env
+CHAT_ID "-1003544348135"
+API="https://api.telegram.org/bot$TELEGRAM_TOKEN"
 OFFSET_FILE="$HOME/.tg_offset"
 
 [ -f "$OFFSET_FILE" ] && OFFSET=$(cat "$OFFSET_FILE") || OFFSET=0
