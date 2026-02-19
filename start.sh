@@ -13,4 +13,4 @@ nohup /usr/local/bin/detect_bruteforce.sh >/dev/null 2>&1 &
 #shell:
 exec /bin/bash
 # keep bash alive as pid 1
-exec /bin/bash -c "trap : TERM INT; while true; do sleep 3600; done"
+exec /bin/bash -c "trap : TERM INT; wait"
