@@ -1,0 +1,35 @@
+networks:
+  honeynet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+services:
+
+  entry:
+    build: .
+    image: ubuntu_ho
+    container_name: entry
+    hostname: server1
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.10
+    ports:
+      - "2222:22"
+
+  db:
+    image: ubuntu_ho
+    container_name: db
+    hostname: db-server
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.20
+
+  admin:
+    image: ubuntu_ho
+    container_name: admin
+    hostname: admin-server
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.30

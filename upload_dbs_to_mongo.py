@@ -4,19 +4,16 @@ import datetime
 from pymongo import MongoClient
 import datetime
 
-# --- MongoDB config ---
 MONGO_URI = "REDACTED"
 client = MongoClient(MONGO_URI)
 
 db = client["honeypot"]
 hackers_col = db["hackers"]
 
-# --- paths ---
 LOG_DIR = "/var/log/auth.log"
 
 
 def parse_timestamp(ts_str):
-    # example: "20250101_153012"
     return datetime.datetime.strptime(ts_str, "%Y%m%d_%H%M%S")
 
 
