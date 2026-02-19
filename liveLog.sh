@@ -1,11 +1,11 @@
 #!/bin/bash
 
-TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
-CHAT="-1003544348135"
+TELEGRAM_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
+CHAT_ID="-1003544348135"
 
 send_alert() {
-    curl -s -X POST "https://api.telegram.org/bot$TOKEN/sendMessage" \
-        -d chat_id="$CHAT" \
+    curl -s -X POST "https://api.telegram.org/bot$TELEGRAM_TOKEN/sendMessage" \
+        -d chat_id="$CHAT_ID" \
         -d text="$1" > /dev/null
 }
 
