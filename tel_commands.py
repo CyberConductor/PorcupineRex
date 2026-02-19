@@ -2,7 +2,6 @@ import os
 import requests
 import time
 from pymongo import MongoClient
-import datetime
 from dotenv import load_dotenv
 import ip_info
 
@@ -11,10 +10,16 @@ load_dotenv()
 BOT_TOKEN = os.getenv("TELEGRAM_TOKEN")
 BASE_URL = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
-MONGO_URI = "mongodb+srv://kalaiboaz_db_user:XUV3rthRmubjnuHG@honeypot.nyvgpyd.mongodb.net/"
+MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
-db = client["honeypot"]
-hackers_col = db["hackers"]
+
+DB = client["honeypot"]
+INFO_DB = DB["hackers"]
+COMMANDS_DB = DB["commands"]
+BLOCKED_DB = DB["blocked_ips"]
+
+
+
 
 
 def get_updates(offset=None):
@@ -25,13 +30,13 @@ def get_updates(offset=None):
     r = requests.get(f"{BASE_URL}/getUpdates", params=params, timeout=10)
     return r.json()
 
+
 def send_message(chat_id, text):
     payload = {
         "chat_id": chat_id,
         "text": text
     }
     requests.post(f"{BASE_URL}/sendMessage", json=payload, timeout=10)
-
 
 
 def format_hacker(h):
@@ -58,11 +63,9 @@ def handle_message(message):
     text = message.get("text", "").strip()
 
     if text == "/attackers":
-        hackers = hackers_col.find().sort("first_seen", -1).limit(5)
+        hackers = INFO_DB.find().sort("first_seen", -1).limit(5)
 
-        msgs = []
-        for h in hackers:
-            msgs.append(format_hacker(h))
+        msgs = [format_hacker(h) for h in hackers]
 
         if not msgs:
             send_message(chat_id, "No attackers found")
@@ -71,22 +74,129 @@ def handle_message(message):
 
     elif text.startswith("/attacker "):
         ip = text.split(" ", 1)[1]
-        h = hackers_col.find_one({"ip": ip})
-        ip_details(ip)
+        h = INFO_DB.find_one({"ip": ip})
+        result = ip_info.ip_details(ip)
+        
         if not h:
             send_message(chat_id, f"No result for {ip}")
         else:
             send_message(chat_id, format_hacker(h))
-            result = ip_details(ip)
-            print("IP:", result["query"])
-            print("Country:", result["country"])
-            print("City:", result["city"])
-            print("ISP:", result["isp"])
-            print("Latitude:", result["lat"])
-            print("Longitude:", result["lon"])
+        msg = (
+            f"IP: {result.get('query','N/A')}\n"
+            f"Country: {result.get('country','N/A')}\n"
+            f"City: {result.get('city','N/A')}\n"
+            f"ISP: {result.get('isp','N/A')}\n"
+            f"Latitude: {result.get('lat','N/A')}\n"
+            f"Longitude: {result.get('lon','N/A')}"
+        )
+        send_message(chat_id, msg)
+    elif text == "/attacks":
+        attack_display = [
+            {
+                "$group": {
+                    "_id": "$attack_type",
+                    "count": {"$sum": 1}
+                }
+            },
+            {
+                "$sort": {"count": -1}
+            }
+        ]
 
+        results = list(INFO_DB.aggregate(attack_display))
+
+        if not results:
+            send_message(chat_id, "No attacks recorded yet")
+            return
+
+        msg_lines = ["Attack statistics:\n"]
+
+        for r in results:
+            attack_type = r["_id"] if r["_id"] else "unknown"
+            count = r["count"]
+            msg_lines.append(f"{attack_type}: {count}")
+
+        send_message(chat_id, "\n".join(msg_lines))
+
+    elif text.startswith("/commands"):
+        docs = list(COMMANDS_DB.find().sort("timestamp", 1))
+
+        if not docs:
+            send_message(chat_id, "No commands found")
+            return
+
+        for doc in docs:
+            msg = (
+                f"Session: {doc.get('session_id')}\n"
+                f"Command: {doc.get('command')}\n"
+                f"Time: {doc.get('timestamp')}"
+            )
+            send_message(chat_id, msg)
+
+    elif text.startswith("/help"):
+        help_text = (
+            "/attackers - List recent attackers\n"
+            "/attacker <IP> - Get details about a specific attacker\n"
+            "/commands - List executed commands\n"
+            "/block <IP> - Schedule an IP to be blocked\n"
+        )
+        send_message(chat_id, help_text)
+
+    elif text.startswith("/start"):
+        welcome_text = (
+            "Welcome to the Honeypot Telegram Bot!\n"
+            "Use /help to see available commands."
+        )
+        send_message(chat_id, welcome_text)
+
+    elif text.startswith("/block "):
+        ip = text.split(" ", 1)[1]
+        now = int(time.time())
+        block_duration = 600  
+
+        BLOCKED_DB.update_one(
+            {"ip": ip},
+            {"$set": {
+                "ip": ip,
+                "added_at": now,
+                "expires_at": now + block_duration,
+                "source": "telegram"
+            }},
+            upsert=True
+        )
+
+        send_message(chat_id, f"IP {ip} has been scheduled for blocking for {block_duration//60} minutes.")
+    elif text.startswith("/unblock "):
+        ip = text.split(" ", 1)[1]
+        BLOCKED_DB.delete_one({"ip": ip})
+        send_message(chat_id, f"IP {ip} has been removed from the block list.")
+    elif text.startswith("/isblocked "):
+        ip = text.split(" ", 1)[1]
+        if ip_blocker.is_ip_blocked(ip):
+            send_message(chat_id, f"IP {ip} is currently blocked.")
+        else:
+            send_message(chat_id, f"IP {ip} is not blocked.")
+    elif text.startswith("/blocklist"):
+        now = int(time.time())
+        blocked_ips = list(BLOCKED_DB.find({"expires_at": {"$gt": now}}))
+
+        if not blocked_ips:
+            send_message(chat_id, "No IPs are currently blocked.")
+            return
+
+        msg_lines = ["Currently blocked IPs:\n"]
+        for entry in blocked_ips:
+            ip = entry["ip"]
+            expires_in = entry["expires_at"] - now
+            msg_lines.append(f"{ip} (expires in {expires_in//60} minutes)")
+
+        send_message(chat_id, "\n".join(msg_lines))
+    elif text.startswith("/delete"):
+        send_message(chat_id, "Delete command received.")
+        send_message(chat_id, "Honeypot will be deleted in a minute.")
     else:
-        send_message(chat_id, "Unknown command")
+        send_message(chat_id, "Unknown command. Use /help to see available commands.")
+
 
 def main():
     offset = None
@@ -102,6 +212,7 @@ def main():
                     handle_message(update["message"])
 
         time.sleep(1)
+
 
 if __name__ == "__main__":
     main()
