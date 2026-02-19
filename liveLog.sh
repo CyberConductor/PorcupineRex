@@ -18,7 +18,7 @@ monitor_tty() {
 
         case "$line" in
             *wget*|*curl*|*tftp*|*nc*|*ncat*|*bash*|*sh*|*python*|*perl*|*php*|*busybox*|*base64*|*/tmp/*|*chmod*|*>\ /dev/tcp/*)
-                send_alert "⚠️ Honeypot command: $line"
+                send_alert "Honeypot command: $line"
                 ;;
         esac
     done
