@@ -19,9 +19,6 @@ COMMANDS_DB = DB["commands"]
 BLOCKED_DB = DB["blocked_ips"]
 
 
-
-
-
 def get_updates(offset=None):
     params = {"timeout": 30}
     if offset is not None:
@@ -64,7 +61,6 @@ def handle_message(message):
 
     if text == "/attackers":
         hackers = INFO_DB.find().sort("first_seen", -1).limit(5)
-
         msgs = [format_hacker(h) for h in hackers]
 
         if not msgs:
@@ -75,50 +71,47 @@ def handle_message(message):
     elif text.startswith("/attacker "):
         ip = text.split(" ", 1)[1]
         h = INFO_DB.find_one({"ip": ip})
-        result = ip_info.ip_details(ip)
-        
+
         if not h:
             send_message(chat_id, f"No result for {ip}")
-        else:
-            send_message(chat_id, format_hacker(h))
-        msg = (
-            f"IP: {result.get('query','N/A')}\n"
-            f"Country: {result.get('country','N/A')}\n"
-            f"City: {result.get('city','N/A')}\n"
-            f"ISP: {result.get('isp','N/A')}\n"
-            f"Latitude: {result.get('lat','N/A')}\n"
-            f"Longitude: {result.get('lon','N/A')}"
-        )
-        send_message(chat_id, msg)
+            return
+
+        send_message(chat_id, format_hacker(h))
+
+        try:
+            result = ip_info.ip_details(ip)
+            geo_msg = (
+                f"IP: {result.get('query','N/A')}\n"
+                f"Country: {result.get('country','N/A')}\n"
+                f"City: {result.get('city','N/A')}\n"
+                f"ISP: {result.get('isp','N/A')}\n"
+                f"Latitude: {result.get('lat','N/A')}\n"
+                f"Longitude: {result.get('lon','N/A')}"
+            )
+            send_message(chat_id, geo_msg)
+        except Exception:
+            send_message(chat_id, "Failed to retrieve IP details")
+
     elif text == "/attacks":
-        attack_display = [
-            {
-                "$group": {
-                    "_id": "$attack_type",
-                    "count": {"$sum": 1}
-                }
-            },
-            {
-                "$sort": {"count": -1}
-            }
+        pipeline = [
+            {"$group": {"_id": "$attack_type", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}}
         ]
 
-        results = list(INFO_DB.aggregate(attack_display))
+        results = list(INFO_DB.aggregate(pipeline))
 
         if not results:
             send_message(chat_id, "No attacks recorded yet")
             return
 
         msg_lines = ["Attack statistics:\n"]
-
         for r in results:
             attack_type = r["_id"] if r["_id"] else "unknown"
-            count = r["count"]
-            msg_lines.append(f"{attack_type}: {count}")
+            msg_lines.append(f"{attack_type}: {r['count']}")
 
         send_message(chat_id, "\n".join(msg_lines))
 
-    elif text.startswith("/commands"):
+    elif text == "/commands":
         docs = list(COMMANDS_DB.find().sort("timestamp", 1))
 
         if not docs:
@@ -133,26 +126,10 @@ def handle_message(message):
             )
             send_message(chat_id, msg)
 
-    elif text.startswith("/help"):
-        help_text = (
-            "/attackers - List recent attackers\n"
-            "/attacker <IP> - Get details about a specific attacker\n"
-            "/commands - List executed commands\n"
-            "/block <IP> - Schedule an IP to be blocked\n"
-        )
-        send_message(chat_id, help_text)
-
-    elif text.startswith("/start"):
-        welcome_text = (
-            "Welcome to the Honeypot Telegram Bot!\n"
-            "Use /help to see available commands."
-        )
-        send_message(chat_id, welcome_text)
-
     elif text.startswith("/block "):
         ip = text.split(" ", 1)[1]
         now = int(time.time())
-        block_duration = 600  
+        block_duration = 600
 
         BLOCKED_DB.update_one(
             {"ip": ip},
@@ -165,37 +142,42 @@ def handle_message(message):
             upsert=True
         )
 
-        send_message(chat_id, f"IP {ip} has been scheduled for blocking for {block_duration//60} minutes.")
+        send_message(chat_id, f"IP {ip} blocked for {block_duration//60} minutes")
+
     elif text.startswith("/unblock "):
         ip = text.split(" ", 1)[1]
         BLOCKED_DB.delete_one({"ip": ip})
-        send_message(chat_id, f"IP {ip} has been removed from the block list.")
-    elif text.startswith("/isblocked "):
-        ip = text.split(" ", 1)[1]
-        if ip_blocker.is_ip_blocked(ip):
-            send_message(chat_id, f"IP {ip} is currently blocked.")
-        else:
-            send_message(chat_id, f"IP {ip} is not blocked.")
-    elif text.startswith("/blocklist"):
+        send_message(chat_id, f"IP {ip} removed from block list")
+
+    elif text == "/blocklist":
         now = int(time.time())
         blocked_ips = list(BLOCKED_DB.find({"expires_at": {"$gt": now}}))
 
         if not blocked_ips:
-            send_message(chat_id, "No IPs are currently blocked.")
+            send_message(chat_id, "No IPs are currently blocked")
             return
 
         msg_lines = ["Currently blocked IPs:\n"]
         for entry in blocked_ips:
-            ip = entry["ip"]
             expires_in = entry["expires_at"] - now
-            msg_lines.append(f"{ip} (expires in {expires_in//60} minutes)")
+            msg_lines.append(f"{entry['ip']} (expires in {expires_in//60} minutes)")
 
         send_message(chat_id, "\n".join(msg_lines))
-    elif text.startswith("/delete"):
-        send_message(chat_id, "Delete command received.")
-        send_message(chat_id, "Honeypot will be deleted in a minute.")
+
+    elif text == "/help":
+        help_text = (
+            "/attackers\n"
+            "/attacker <IP>\n"
+            "/attacks\n"
+            "/commands\n"
+            "/block <IP>\n"
+            "/unblock <IP>\n"
+            "/blocklist"
+        )
+        send_message(chat_id, help_text)
+
     else:
-        send_message(chat_id, "Unknown command. Use /help to see available commands.")
+        send_message(chat_id, "Unknown command. Use /help")
 
 
 def main():
@@ -207,7 +189,6 @@ def main():
         if updates.get("ok"):
             for update in updates.get("result", []):
                 offset = update["update_id"] + 1
-
                 if "message" in update:
                     handle_message(update["message"])
 
