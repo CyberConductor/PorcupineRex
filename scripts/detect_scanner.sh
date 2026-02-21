@@ -1,87 +1,99 @@
 #!/bin/bash
 
-# הגדרות
 LOG_FILE="/var/log/auth.log"
-BOT_TOKEN="8317853350:AAE77Qze7aCIv6oGwXiMQeg7ciWCDSgGbjc"
-CHAT_ID="7444335759"
+BOT_TOKEN="PUT_YOUR_TOKEN_HERE"
+CHAT_ID="PUT_CHAT_ID_HERE"
 THRESHOLD=10
 TIME_WINDOW=30
 
 STATE_DIR="/var/lib/scanner-detector"
 ATTEMPTS_FILE="$STATE_DIR/attempts.db"
 
-if [ "$EUID" -ne 0 ]; then 
+if [ "$EUID" -ne 0 ]; then
     echo "Error: Must run as root"
     exit 1
 fi
 
 mkdir -p "$STATE_DIR"
-> "$ATTEMPTS_FILE"
 
+# אל תאפס אם כבר קיים
+touch "$ATTEMPTS_FILE"
 
 send_telegram() {
-    local message=$1
+    local message="$1"
     curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
         -d "chat_id=${CHAT_ID}" \
-        -d "text=${message}" > /dev/null
+        -d "text=${message}" >/dev/null
 }
 
-
 count_attempts() {
-    local ip=$1
-    local current_time=$(date +%s)
+    local ip="$1"
+    local current_time
+    current_time=$(date +%s)
     local count=0
-    
+
     while IFS=':' read -r stored_ip timestamp; do
         if [ "$stored_ip" = "$ip" ] && [ $((current_time - timestamp)) -lt "$TIME_WINDOW" ]; then
             ((count++))
         fi
     done < "$ATTEMPTS_FILE" 2>/dev/null
-    
+
     echo "$count"
 }
 
 cleanup_attempts() {
-    local current_time=$(date +%s)
+    local current_time
+    current_time=$(date +%s)
     local temp_file="${ATTEMPTS_FILE}.tmp"
-    
+    : > "$temp_file"
+
     while IFS=':' read -r ip timestamp; do
-        [ $((current_time - timestamp)) -lt "$TIME_WINDOW" ] && echo "${ip}:${timestamp}" >> "$temp_file"
+        if [ $((current_time - timestamp)) -lt "$TIME_WINDOW" ]; then
+            echo "${ip}:${timestamp}" >> "$temp_file"
+        fi
     done < "$ATTEMPTS_FILE" 2>/dev/null
-    
-    mv "$temp_file" "$ATTEMPTS_FILE" 2>/dev/null
+
+    mv "$temp_file" "$ATTEMPTS_FILE"
 }
 
 process_line() {
-    local line=$1
+    local line="$1"
     local ip=""
     local attack_type=""
-    
+
     if echo "$line" | grep -q "Did not receive identification string"; then
         ip=$(echo "$line" | grep -oP '\d+\.\d+\.\d+\.\d+' | tail -1)
         attack_type="Port Scanner"
+
     elif echo "$line" | grep -q "Failed password for"; then
         ip=$(echo "$line" | grep -oP 'from \K\d+\.\d+\.\d+\.\d+')
         attack_type="Brute Force"
+
     elif echo "$line" | grep -q "Invalid user"; then
         ip=$(echo "$line" | grep -oP 'from \K\d+\.\d+\.\d+\.\d+')
         attack_type="Invalid User"
     fi
-    
+
     [ -z "$ip" ] && return
-    
+
     echo "${ip}:$(date +%s)" >> "$ATTEMPTS_FILE"
 
-    local count=$(count_attempts "$ip")
+    local count
+    count=$(count_attempts "$ip")
+
     echo "[ATTEMPT] $ip ($count/$THRESHOLD) - $attack_type"
 
     if [ "$count" -eq "$THRESHOLD" ]; then
-        send_telegram "⚠️ Scanner Alert: IP $ip reached $THRESHOLD attempts ($attack_type)"
+        send_telegram "Scanner Alert: IP $ip reached $THRESHOLD attempts ($attack_type)"
         echo "[ALERT SENT] $ip"
     fi
 
-    local lines=$(wc -l < "$ATTEMPTS_FILE")
-    [ "$lines" -gt 100 ] && cleanup_attempts
+    local lines
+    lines=$(wc -l < "$ATTEMPTS_FILE")
+
+    if [ "$lines" -gt 100 ]; then
+        cleanup_attempts
+    fi
 }
 
 cleanup_exit() {
@@ -90,6 +102,7 @@ cleanup_exit() {
 }
 
 trap cleanup_exit SIGINT SIGTERM
+
 echo "Scanner Detector Started"
 echo "Threshold: $THRESHOLD attempts in $TIME_WINDOW seconds"
 
