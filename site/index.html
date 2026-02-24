@@ -454,6 +454,38 @@
         <tbody id="commandsTable"></tbody>
       </table>
     </div>
+     <div class="charts" style="margin-top:40px;">
+    <h3>🤖 Chat with Dashboard Bot</h3>
+    <div id="chatbox" style="background: rgba(30,41,59,0.6); padding:15px; border-radius:12px; height:250px; overflow-y:auto; margin-bottom:10px;"></div>
+    <input type="text" id="chatInput" placeholder="Type a question..." style="width:75%; padding:8px; border-radius:8px; border:none; margin-right:5px;">
+    <button onclick="sendChat()" style="padding:8px 15px; border-radius:8px; border:none; background:#3b82f6; color:white; cursor:pointer;">Send</button>
+  </div>
+</div>
+
+<script>
+async function sendChat() {
+  const input = document.getElementById("chatInput");
+  const chatbox = document.getElementById("chatbox");
+  const msg = input.value.trim();
+  if (!msg) return;
+  chatbox.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+  chatbox.scrollTop = chatbox.scrollHeight;
+  input.value = "";
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+    chatbox.innerHTML += `<div><b>Bot:</b> ${data.reply}</div>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
+  } catch (err) {
+    chatbox.innerHTML += `<div><b>Bot:</b> Error contacting server.</div>`;
+  }
+}
+</script>
   </div>
 
 </div>
