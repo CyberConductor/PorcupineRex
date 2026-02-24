@@ -52,7 +52,7 @@ async function start() {
             if (!message) return res.status(400).json({ reply: "Please send a message." });
 
             const lowerMsg = message.toLowerCase();
-            let reply = "I am not sure about that. You can ask about hackers or commands.";
+            let reply = "Sorry, You can ask about hackers or commands.";
 
             try {
                 if (lowerMsg.includes("hackers") || lowerMsg.includes("attacker")) {
