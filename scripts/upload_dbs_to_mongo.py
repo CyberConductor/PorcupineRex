@@ -4,7 +4,7 @@ import datetime
 from pymongo import MongoClient, ASCENDING
 from dotenv import load_dotenv
 
-# --- Config ---
+HALF_DAY = 33200
 load_dotenv()
 
 MONGO_URI = os.getenv("MONGO_URI")
@@ -16,12 +16,8 @@ LOG_DIR = os.getenv("HONEYPOT_LOG_DIR", "./honeypot_sessions")
 client = MongoClient(MONGO_URI)
 db = client["honeypot"]
 hackers_col = db["hackers"]
-
-# Index for performance
 hackers_col.create_index([("ip", ASCENDING)], unique=True)
 
-
-# --- Helpers ---
 
 def parse_timestamp(ts_str):
     try:
@@ -43,8 +39,6 @@ def get_or_create_hacker(ip):
     })
     return result.inserted_id
 
-
-# --- CSV Session Processing ---
 
 def process_csv_file(csv_path):
     with open(csv_path, newline="", encoding="utf-8", errors="ignore") as f:
@@ -82,10 +76,17 @@ def process_csv_file(csv_path):
     print(f"[OK] Uploaded session from {ip}")
 
 
-# --- SSH Event Logging ---
 
 def log_ssh_event(ip, user, success):
     hacker_id = get_or_create_hacker(ip)
+    now = int(time.time())
+
+    hacker = hackers_col.find_one({"_id": hacker_id})
+    failed_attempts = hacker.get("failed_attempts", 0)
+    last_failed_at = hacker.get("last_failed_at", 0)
+
+    if last_failed_at and (now - last_failed_at > HALF_DAY):
+        failed_attempts = 0
 
     event = {
         "type": "ssh_attempt",
@@ -96,21 +97,28 @@ def log_ssh_event(ip, user, success):
         }
     }
 
-    update = {"$push": {"sessions": event}}
+    update = {
+        "$push": {"sessions": event}
+    }
 
-    if not success:
-        update["$inc"] = {"failed_attempts": 1}
+    if success:
+        update["$set"] = {
+            "failed_attempts": 0,
+            "last_failed_at": None
+        }
+        hackers_col.update_one({"_id": hacker_id}, update)
+        return 0
 
-    hackers_col.update_one(
-        {"_id": hacker_id},
-        update
-    )
+    else:
+        failed_attempts += 1
 
-    hacker = hackers_col.find_one({"_id": hacker_id})
-    return hacker.get("failed_attempts", 0)
+        update["$set"] = {
+            "failed_attempts": failed_attempts,
+            "last_failed_at": now
+        }
 
-
-# --- Main Loop ---
+        hackers_col.update_one({"_id": hacker_id}, update)
+        return failed_attempts
 
 def main():
     if not os.path.isdir(LOG_DIR):
