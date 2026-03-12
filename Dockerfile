@@ -45,6 +45,8 @@ COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
 COPY dynamic_vuln.sh /usr/local/bin/dynamic_vuln.sh
 COPY del_detect.sh /usr/local/bin/del_detect.sh
 COPY liveLog.sh /usr/local/bin/liveLog.sh
+COPY alert_server.sh /usr/local/bin/alert_server.sh
+COPY check_awareness.sh /usr/local/bin/check_awareness.sh
 COPY start.sh /start.sh
 
 COPY .env /usr/local/bin/.env

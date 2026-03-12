@@ -2,7 +2,6 @@
 
 #bash script to setup a honeypot base vm
 
-
 sudo apt update && sudo apt upgrade -y
 
 #install SSH server and utilities
