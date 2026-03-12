@@ -56,7 +56,6 @@ def restore_blocks():
 
 restore_blocks()
 
-# --- PAM variables ---
 user = os.getenv("PAM_USER", "unknown")
 remote = os.getenv("PAM_RHOST", "unknown")
 pam_type = os.getenv("PAM_TYPE", "")
@@ -65,7 +64,6 @@ now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 if not remote or remote == "unknown":
     exit(0)
 
-# --- Successful login ---
 if pam_type == "open_session":
 
     send(
@@ -81,7 +79,6 @@ if pam_type == "open_session":
         success=True
     )
 
-# --- Failed login ---
 else:
 
     failed_count = upload_dbs_to_mongo.log_ssh_event(
