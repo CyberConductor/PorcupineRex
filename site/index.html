@@ -680,6 +680,7 @@
         </thead>
         <tbody id="commandsTable"></tbody>
       </table>
+      <div class="pagination" id="commandsPagination"></div>
     </div>
 
     <div class="charts" style="margin-top:40px;">
@@ -703,6 +704,8 @@ let filteredAttackers = [];   // after search filter
 let sortKey           = 'failed_attempts';
 let sortDir           = 'desc';
 let currentPage       = 1;
+let commandsPage      = 1;
+let allCommandsSorted = [];
 const PAGE_SIZE       = 25;
 const expandedRows    = new Set();
 
@@ -1223,10 +1226,19 @@ async function loadCommandsData() {
     }
   });
 
-  // Commands table
-  const table = document.getElementById('commandsTable');
+  // Commands table — store sorted data and render first page
+  allCommandsSorted = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+  commandsPage = 1;
+  renderCommandsTable();
+}
+
+function renderCommandsTable() {
+  const table  = document.getElementById('commandsTable');
+  const start  = (commandsPage - 1) * PAGE_SIZE;
+  const page   = allCommandsSorted.slice(start, start + PAGE_SIZE);
+
   table.innerHTML = '';
-  [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(cmd => {
+  page.forEach(cmd => {
     const badge = cmd.attack_type
       ? `<span class="attack-badge">${cmd.attack_type}</span>`
       : '<span class="attack-badge">Unknown</span>';
@@ -1238,6 +1250,27 @@ async function loadCommandsData() {
         <td class="timestamp">${cmd.session_id}</td>
       </tr>`;
   });
+
+  // Pagination
+  const totalPages = Math.ceil(allCommandsSorted.length / PAGE_SIZE);
+  const container  = document.getElementById('commandsPagination');
+  if (totalPages <= 1) { container.innerHTML = ''; return; }
+
+  let html = '';
+  html += `<button class="page-btn" onclick="goToCommandsPage(${commandsPage - 1})" ${commandsPage === 1 ? 'disabled' : ''}>‹</button>`;
+  getPageNumbers(commandsPage, totalPages).forEach(p => {
+    if (p === '…') html += `<span class="page-ellipsis">…</span>`;
+    else html += `<button class="page-btn ${p === commandsPage ? 'active' : ''}" onclick="goToCommandsPage(${p})">${p}</button>`;
+  });
+  html += `<button class="page-btn" onclick="goToCommandsPage(${commandsPage + 1})" ${commandsPage === totalPages ? 'disabled' : ''}>›</button>`;
+  container.innerHTML = html;
+}
+
+function goToCommandsPage(page) {
+  const totalPages = Math.ceil(allCommandsSorted.length / PAGE_SIZE);
+  if (page < 1 || page > totalPages) return;
+  commandsPage = page;
+  renderCommandsTable();
 }
 
 /* ═══════════════════════════════════════════════
