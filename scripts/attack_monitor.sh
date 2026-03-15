@@ -3,7 +3,6 @@
 LOGFILE="/var/log/attack_monitor.log"
 LAST_ALERT_FILE="/tmp/last_root_alert"
 
-### telegram config ###
 if [ -f /usr/local/bin/.env ]; then
     source /usr/local/bin/.env
 elif [ -f .env ]; then
@@ -28,9 +27,6 @@ log_alert()
     send_telegram "Attack detected:\n$msg"
 }
 
-###########################################
-### wait for command log
-###########################################
 
 COMMAND_LOG="/honeypot-logs/attacker_activity.log"
 
@@ -38,9 +34,6 @@ while [ ! -f "$COMMAND_LOG" ]; do
     sleep 1
 done
 
-###########################################
-### command categories
-###########################################
 
 declare -A categories=(
     ["su"]="Privilege Escalation"
@@ -64,9 +57,6 @@ declare -A categories=(
     ["-2000"]="SGID Enumeration"
 )
 
-###########################################
-### background real time command monitor
-###########################################
 
 tail -F "$COMMAND_LOG" | while read -r line
 do
@@ -75,7 +65,7 @@ do
 
     command="$line"
 
-    # category based detection
+    #category based detection
     for pattern in "${!categories[@]}"
     do
         if echo "$command" | grep -qw "$pattern"; then
@@ -86,13 +76,12 @@ Command: $command"
         fi
     done
 
-    # PATH hijacking detection
+    #PATH hijacking detection
     if echo "$command" | grep -Eq '(^| )export PATH=|PATH=.*:|PATH=/tmp'; then
         log_alert "Possible PATH hijacking attempt
 Command: $command"
     fi
 
-    # LD_* abuse
     if echo "$command" | grep -Eq 'LD_PRELOAD|LD_LIBRARY_PATH'; then
         log_alert "SUID environment abuse detected (LD_*)
 Command: $command"
@@ -100,16 +89,10 @@ Command: $command"
 
 done &
 
-###########################################
-### MAIN LOOP - SYSTEM RULES
-###########################################
 
 while true
 do
 
-###########################################
-### rule 1, detect new SUID files
-###########################################
 
     find / -type f -perm -4000 \
         -not -path "/proc/*" \
@@ -127,9 +110,6 @@ $diff_output"
         fi
     fi
 
-###########################################
-### rule 2, detect sudoers modification
-###########################################
 
     current_hash=$(sha256sum /etc/sudoers)
 
@@ -143,9 +123,6 @@ $diff_output"
         fi
     fi
 
-###########################################
-### rule 3, detect new admin user
-###########################################
 
     current_admins=$(getent group sudo wheel 2>/dev/null |
         awk -F: '{print $4}' |
@@ -162,10 +139,6 @@ $diff_output"
             echo "$current_admins" > /tmp/admin_users_old
         fi
     fi
-
-###########################################
-### rule 4, detect unexpected root shell
-###########################################
 
     ps -eo pid,user,cmd | awk '
     $2=="root" &&
@@ -190,10 +163,6 @@ $diff_output"
             cp /tmp/root_shells_new /tmp/root_shells_old
         fi
     fi
-
-###########################################
-### rule 5, detect cron modifications
-###########################################
 
     for f in /etc/crontab /etc/cron.*/*; do
         [ ! -f "$f" ] && continue
