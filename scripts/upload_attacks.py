@@ -8,7 +8,6 @@ DB_NAME = "honeypot"
 COLLECTION_NAME = "commands"
 
 LOG_FILE = "/honeypot-logs/attacker_activity.log"
-
 SESSION_ID = os.getenv("SESSION_ID", "live-session")
 
 ATTACK_PATTERNS = {
@@ -31,6 +30,24 @@ ATTACK_PATTERNS = {
     "getcap -r /": "Capabilities Enumeration",
 }
 
+#categorize severity(1-low, 10-high)
+SEVERITY_MAP = {
+    "Privilege Escalation": 9,
+    "Privilege Escalation Attempt": 7,
+    "System Info": 2,
+    "User Info": 1,
+    "Files Lookup": 3,
+    "Suspicious Download": 6,
+    "Lateral Movement": 8,
+    "Compilation Activity": 4,
+    "Script Execution": 5,
+    "File Transfer": 6,
+    "Unauthorized File Access": 10,
+    "SUID Enumeration": 7,
+    "Capabilities Enumeration": 6,
+    "Unknown": 1,
+}
+
 client = MongoClient(MONGO_URI)
 db = client[DB_NAME]
 collection = db[COLLECTION_NAME]
@@ -49,17 +66,19 @@ def process_line(line):
         return
 
     attack_type = detect_attack_type(line)
+    severity = SEVERITY_MAP.get(attack_type, 1)  # default to 1 if unknown
 
     doc = {
         "session_id": SESSION_ID,
         "timestamp": datetime.utcnow(),
         "command": line,
         "attack_type": attack_type,
+        "severity": severity,
         "raw_line": line
     }
 
     collection.insert_one(doc)
-    print(f"[+] Uploaded: {line} | Type: {attack_type}")
+    print(f"[+] Uploaded: {line} | Type: {attack_type} | Severity: {severity}")
 
 
 def monitor_log():
@@ -69,7 +88,7 @@ def monitor_log():
         time.sleep(1)
 
     with open(LOG_FILE, "r") as f:
-        f.seek(0, os.SEEK_END) 
+        f.seek(0, os.SEEK_END)
 
         while True:
             line = f.readline()
