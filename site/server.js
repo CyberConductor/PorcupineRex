@@ -24,7 +24,7 @@ async function start() {
         db = client.db("honeypot");
 
         app.get("/", (req, res) => {
-            res.sendFile(path.join(__dirname, "dashboard.html"));
+            res.sendFile(path.join(__dirname, "index.html"));
         });
 
         app.get("/api/hackers", async (req, res) => {
