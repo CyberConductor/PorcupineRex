@@ -188,6 +188,42 @@
       z-index: 1;
     }
 
+    .card-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-bottom p {
+      margin: 0;
+    }
+
+    .trend {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+
+    .trend-value {
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .trend-value.up   { color: #22c55e; }
+    .trend-value.down { color: #ef4444; }
+    .trend-value.flat { color: #64748b; }
+
+    .trend-label {
+      font-size: 10px;
+      color: #475569;
+      white-space: nowrap;
+    }
+
     .charts {
       background: linear-gradient(135deg, rgba(2, 6, 23, 0.9) 0%, rgba(30, 41, 59, 0.6) 100%);
       padding: 28px;
@@ -535,15 +571,22 @@
     <div class="stats">
       <div class="card">
         <h2>Total Attackers</h2>
-        <p id="totalAttackers">0</p>
+        <div class="card-bottom">
+          <p id="totalAttackers">0</p>
+        </div>
       </div>
       <div class="card">
         <h2>Total Failed Attempts</h2>
-        <p id="totalFails">0</p>
+        <div class="card-bottom">
+          <p id="totalFails">0</p>
+          <div class="trend" id="trendTotalFails"></div>
+        </div>
       </div>
       <div class="card">
         <h2>Unique IPs</h2>
-        <p id="uniqueIps">0</p>
+        <div class="card-bottom">
+          <p id="uniqueIps">0</p>
+        </div>
       </div>
     </div>
 
@@ -594,15 +637,23 @@
     <div class="stats">
       <div class="card">
         <h2>Total Commands</h2>
-        <p id="totalCommands">0</p>
+        <div class="card-bottom">
+          <p id="totalCommands">0</p>
+          <div class="trend" id="trendTotalCommands"></div>
+        </div>
       </div>
       <div class="card">
         <h2>Unique Attack Types</h2>
-        <p id="uniqueAttackTypes">0</p>
+        <div class="card-bottom">
+          <p id="uniqueAttackTypes">0</p>
+          <div class="trend" id="trendUniqueTypes"></div>
+        </div>
       </div>
       <div class="card">
         <h2>Most Common Attack</h2>
-        <p id="topAttackType" style="font-size: 18px;">-</p>
+        <div class="card-bottom">
+          <p id="topAttackType" style="font-size: 18px;">-</p>
+        </div>
       </div>
     </div>
 
@@ -670,6 +721,36 @@ function switchTab(tab, btn) {
 }
 
 /* ═══════════════════════════════════════════════
+   TREND INDICATOR HELPER
+═══════════════════════════════════════════════ */
+function renderTrend(elementId, current, previous) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+
+  if (previous === 0 && current === 0) {
+    el.innerHTML = `
+      <span class="trend-value flat">→ 0%</span>
+      <span class="trend-label">vs 24h ago</span>`;
+    return;
+  }
+
+  if (previous === 0) {
+    el.innerHTML = `
+      <span class="trend-value up">▲ new</span>
+      <span class="trend-label">vs 24h ago</span>`;
+    return;
+  }
+
+  const pct  = Math.round(((current - previous) / previous) * 100);
+  const cls  = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
+  const arrow = pct > 0 ? '▲' : pct < 0 ? '▼' : '→';
+
+  el.innerHTML = `
+    <span class="trend-value ${cls}">${arrow} ${Math.abs(pct)}%</span>
+    <span class="trend-label">vs 24h ago</span>`;
+}
+
+/* ═══════════════════════════════════════════════
    ATTACKERS — DATA LOAD
 ═══════════════════════════════════════════════ */
 async function loadAttackersData() {
@@ -680,8 +761,27 @@ async function loadAttackersData() {
   // Stats
   document.getElementById('totalAttackers').innerText = data.length;
   document.getElementById('uniqueIps').innerText = new Set(data.map(h => h.ip)).size;
-  document.getElementById('totalFails').innerText =
-    data.reduce((sum, h) => sum + (h.failed_attempts || 0), 0);
+
+  // Failed attempts trend — based on sessions timestamps
+  const now       = Date.now();
+  const ms24h     = 24 * 60 * 60 * 1000;
+  const cutoff24h = now - ms24h;
+  const cutoff48h = now - ms24h * 2;
+
+  let failsLast24 = 0, failsPrev24 = 0;
+  data.forEach(h => {
+    (h.sessions || []).forEach(s => {
+      if (!s.success) {
+        const t = new Date(s.time).getTime();
+        if (t >= cutoff24h)       failsLast24++;
+        else if (t >= cutoff48h)  failsPrev24++;
+      }
+    });
+  });
+
+  const totalFails = data.reduce((sum, h) => sum + (h.failed_attempts || 0), 0);
+  document.getElementById('totalFails').innerText = totalFails;
+  renderTrend('trendTotalFails', failsLast24, failsPrev24);
 
   // Chart
   renderAttackChart(data);
@@ -981,6 +1081,25 @@ async function loadCommandsData() {
   const data = await res.json();
 
   document.getElementById('totalCommands').innerText = data.length;
+
+  // Trend — commands in last 24h vs previous 24h
+  const now       = Date.now();
+  const ms24h     = 24 * 60 * 60 * 1000;
+  const cutoff24h = now - ms24h;
+  const cutoff48h = now - ms24h * 2;
+
+  const cmdsLast24 = data.filter(c => new Date(c.timestamp).getTime() >= cutoff24h);
+  const cmdsPrev24 = data.filter(c => {
+    const t = new Date(c.timestamp).getTime();
+    return t >= cutoff48h && t < cutoff24h;
+  });
+
+  renderTrend('trendTotalCommands', cmdsLast24.length, cmdsPrev24.length);
+
+  // Unique attack types trend
+  const typesLast24 = new Set(cmdsLast24.map(c => c.attack_type || 'Unknown')).size;
+  const typesPrev24 = new Set(cmdsPrev24.map(c => c.attack_type || 'Unknown')).size;
+  renderTrend('trendUniqueTypes', typesLast24, typesPrev24);
 
   const attackTypeCounts = {};
   data.forEach(cmd => {
