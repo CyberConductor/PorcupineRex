@@ -1034,6 +1034,8 @@ function renderAttackChart(data) {
 
   if (attackChartInstance) attackChartInstance.destroy();
 
+  const isHorizontal = labels.length > 10;
+
   attackChartInstance = new Chart(document.getElementById('attackChart'), {
     type: 'bar',
     data: {
@@ -1042,7 +1044,9 @@ function renderAttackChart(data) {
         label: 'Failed Attempts',
         data: values,
         backgroundColor: function(context) {
-          const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 400);
+          const gradient = isHorizontal
+            ? context.chart.ctx.createLinearGradient(400, 0, 0, 0)
+            : context.chart.ctx.createLinearGradient(0, 0, 0, 400);
           gradient.addColorStop(0, 'rgba(239, 68, 68, 0.8)');
           gradient.addColorStop(1, 'rgba(239, 68, 68, 0.4)');
           return gradient;
@@ -1053,8 +1057,10 @@ function renderAttackChart(data) {
       }]
     },
     options: {
+      indexAxis: isHorizontal ? 'y' : 'x',
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: !isHorizontal,
+      ...(isHorizontal && { aspectRatio: 1.2 }),
       plugins: {
         legend: { display: false },
         tooltip: {
