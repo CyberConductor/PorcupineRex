@@ -119,9 +119,26 @@ def handle_message(message):
             return
 
         for doc in docs:
+            severity = doc.get("severity", 1)
+            level = ""
+            if severity <= 3:
+                level = "Low"
+            elif severity <= 6:
+                level = "Medium"
+            elif severity <= 8:
+                level = "High"
+            elif severity <= 10:
+                level = "Critical!"
+            else:
+                level = "Unknown"
+                send_message(chat_id, f"Unknown severity level for command: {doc.get('command')}")
+                send_message(chat_id, f"Check Urgently:\n{doc.get('command')}")
+
             msg = (
                 f"Session: {doc.get('session_id')}\n"
                 f"Command: {doc.get('command')}\n"
+                f"Attack Type: {doc.get('attack_type')}\n"
+                f"Severity: {level} ({severity}/10)\n"
                 f"Time: {doc.get('timestamp')}"
             )
             send_message(chat_id, msg)
