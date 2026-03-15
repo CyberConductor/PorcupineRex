@@ -854,6 +854,10 @@ function applyFilterAndSort() {
     let av = a[sortKey], bv = b[sortKey];
     if (sortKey === 'first_seen') { av = new Date(av); bv = new Date(bv); }
     if (sortKey === 'failed_attempts') { av = av || 0; bv = bv || 0; }
+    if (sortKey === 'ip') {
+      const toNum = ip => (ip || '').split('.').map(n => parseInt(n, 10).toString().padStart(3, '0')).join('');
+      av = toNum(a.ip); bv = toNum(b.ip);
+    }
     if (av < bv) return sortDir === 'asc' ? -1 :  1;
     if (av > bv) return sortDir === 'asc' ?  1 : -1;
     return 0;
