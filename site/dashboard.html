@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Honeypot Security Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+</head>
+
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- HEADER                                                         -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<header>
+  <div class="header-inner">
+
+    <a href="#" class="logo">
+      <div class="logo-icon">🛡️</div>
+      <div>
+        <span class="logo-text">HoneyWatch</span>
+        <span class="logo-sub">Security Intelligence</span>
+      </div>
+    </a>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab(event, 'attackers')">
+        👤 Attackers
+      </button>
+      <button class="nav-tab" onclick="switchTab(event, 'commands')">
+        ⚔️ Commands &amp; Attacks
+      </button>
+    </div>
+
+    <div class="nav-status">
+      <span class="status-dot"></span>
+      LIVE MONITORING
+    </div>
+
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- MAIN                                                           -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<div class="container">
+
+  <!-- ── ATTACKERS SECTION ──────────────────────────────────────── -->
+  <div id="attackers-section" class="section active">
+
+    <div class="page-title">
+      <h2>IP Attacker Overview</h2>
+      <p>All unique IP addresses that have attempted unauthorised access to the honeypot</p>
+    </div>
+
+    <div class="stats">
+      <div class="card">
+        <span class="card-icon">🌐</span>
+        <div class="card-label">Total Attackers</div>
+        <div class="card-value" id="totalAttackers">—</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🔑</span>
+        <div class="card-label">Unique IPs</div>
+        <div class="card-value" id="uniqueIps">—</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🚫</span>
+        <div class="card-label">Total Failed Attempts</div>
+        <div class="card-value" id="totalFails">—</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">Failed Attempts by IP Address</span>
+        <span class="panel-badge">Bar Chart</span>
+      </div>
+      <canvas id="attackChart"></canvas>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>IP Address</th>
+            <th>First Seen</th>
+            <th>Failed Attempts</th>
+            <th>Session History</th>
+          </tr>
+        </thead>
+        <tbody id="hackersTable"></tbody>
+      </table>
+    </div>
+
+  </div><!-- /attackers-section -->
+
+  <!-- ── COMMANDS SECTION ───────────────────────────────────────── -->
+  <div id="commands-section" class="section">
+
+    <div class="page-title">
+      <h2>Commands &amp; Attack Analysis</h2>
+      <p>Every command executed during attacker sessions, classified by attack type</p>
+    </div>
+
+    <div class="stats">
+      <div class="card">
+        <span class="card-icon">💬</span>
+        <div class="card-label">Total Commands</div>
+        <div class="card-value" id="totalCommands">—</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🏷️</span>
+        <div class="card-label">Unique Attack Types</div>
+        <div class="card-value" id="uniqueAttackTypes">—</div>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎯</span>
+        <div class="card-label">Most Common Attack</div>
+        <div class="card-value sm" id="topAttackType">—</div>
+      </div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Attack Types Distribution</span>
+          <span class="panel-badge">Doughnut</span>
+        </div>
+        <canvas id="attackTypeChart"></canvas>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Commands Over Time</span>
+          <span class="panel-badge">Timeline</span>
+        </div>
+        <canvas id="commandsTimeChart"></canvas>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>Command</th>
+            <th>Attack Type</th>
+            <th>Session ID</th>
+          </tr>
+        </thead>
+        <tbody id="commandsTable"></tbody>
+      </table>
+    </div>
+
+    <!-- Chat panel -->
+    <div class="panel chat-panel">
+      <div class="panel-header">
+        <span class="panel-title">🤖 Ask the Dashboard Bot</span>
+        <span class="panel-badge">AI Assistant</span>
+      </div>
+      <div class="chatbox" id="chatbox"></div>
+      <div class="chat-input-row">
+        <input
+          class="chat-input"
+          type="text"
+          id="chatInput"
+          placeholder="Ask anything about the attack data…"
+          onkeydown="if(event.key==='Enter') sendChat()"
+        />
+        <button class="chat-send" onclick="sendChat()">Send →</button>
+      </div>
+    </div>
+
+  </div><!-- /commands-section -->
+
+</div><!-- /container -->
+
+<!-- ══════════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS                                                        -->
+<!-- ══════════════════════════════════════════════════════════════ -->
+<script>
+/* ── Shared Chart defaults ──────────────────────────────────────── */
+const CHART_DEFAULTS = {
+  color: '#6b7a8d',
+  borderColor: 'rgba(255,255,255,0.05)',
+  font: { family: "'DM Mono', monospace", size: 11 }
+};
+Chart.defaults.color = CHART_DEFAULTS.color;
+
+const tooltipStyle = {
+  backgroundColor: '#0d1117',
+  borderColor: 'rgba(59,158,255,0.25)',
+  borderWidth: 1,
+  padding: 12,
+  titleColor: '#e8ecf0',
+  bodyColor: '#94a3b8',
+  cornerRadius: 8
+};
+
+const gridStyle = {
+  color: 'rgba(255,255,255,0.05)',
+  drawBorder: false
+};
+
+const tickStyle = { color: '#4a5568', font: { family: "'DM Mono', monospace", size: 10 } };
+
+/* ── Chart instances ────────────────────────────────────────────── */
+let attackChartInst, attackTypeChartInst, commandsTimeChartInst;
+
+/* ── Tab switching ──────────────────────────────────────────────── */
+function switchTab(e, tab) {
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  e.target.classList.add('active');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(tab + '-section').classList.add('active');
+}
+
+/* ── Helpers ────────────────────────────────────────────────────── */
+function fmt(ts) {
+  return ts ? new Date(ts).toLocaleString(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+}
+
+/* ── Load Attackers ─────────────────────────────────────────────── */
+async function loadAttackersData() {
+  const data = await fetch('/api/hackers').then(r => r.json());
+
+  document.getElementById('totalAttackers').textContent = data.length;
+  document.getElementById('uniqueIps').textContent = new Set(data.map(h => h.ip)).size;
+  document.getElementById('totalFails').textContent = data.reduce((s, h) => s + (h.failed_attempts || 0), 0);
+
+  const labels = [], values = [];
+  const tbody = document.getElementById('hackersTable');
+  tbody.innerHTML = '';
+
+  data.forEach(h => {
+    labels.push(h.ip);
+    values.push(h.failed_attempts || 0);
+
+    const sessionsHtml = (h.sessions || []).map(s => `
+      <div class="session-row">
+        <span class="timestamp">${fmt(s.time)}</span>
+        <span>user: <strong>${s.user}</strong></span>
+        <span class="${s.success ? 'success' : 'fail'}">${s.success ? '✓ SUCCESS' : '✗ FAIL'}</span>
+      </div>`).join('');
+
+    tbody.innerHTML += `
+      <tr>
+        <td><span class="ip-address">${h.ip}</span></td>
+        <td class="timestamp">${fmt(h.first_seen)}</td>
+        <td><span class="fail-count">${h.failed_attempts || 0}</span></td>
+        <td><div class="sessions">${sessionsHtml || '<span class="timestamp">No sessions</span>'}</div></td>
+      </tr>`;
+  });
+
+  if (attackChartInst) attackChartInst.destroy();
+
+  attackChartInst = new Chart(document.getElementById('attackChart'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Failed Attempts',
+        data: values,
+        backgroundColor: 'rgba(240,82,82,0.5)',
+        borderColor: '#f05252',
+        borderWidth: 1.5,
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: { ...tooltipStyle } },
+      scales: {
+        x: { grid: gridStyle, ticks: tickStyle },
+        y: { grid: gridStyle, ticks: tickStyle }
+      }
+    }
+  });
+}
+
+/* ── Load Commands ──────────────────────────────────────────────── */
+async function loadCommandsData() {
+  const data = await fetch('/api/commands').then(r => r.json());
+
+  document.getElementById('totalCommands').textContent = data.length;
+
+  const typeCounts = {};
+  data.forEach(cmd => {
+    const t = cmd.attack_type || 'Unknown';
+    typeCounts[t] = (typeCounts[t] || 0) + 1;
+  });
+
+  document.getElementById('uniqueAttackTypes').textContent = Object.keys(typeCounts).length;
+
+  let topType = 'Unknown', max = 0;
+  for (const [t, c] of Object.entries(typeCounts)) {
+    if (c > max) { max = c; topType = t; }
+  }
+  document.getElementById('topAttackType').textContent = topType;
+
+  const typeLabels = Object.keys(typeCounts);
+  const typeValues = Object.values(typeCounts);
+
+  const PALETTE = [
+    '#f05252','#f97316','#f5a623','#eab308','#84cc16',
+    '#22c55e','#10b981','#14b8a6','#06b6d4','#0ea5e9',
+    '#3b9eff','#6366f1','#8b5cf6','#a855f7','#d946ef'
+  ];
+
+  if (attackTypeChartInst) attackTypeChartInst.destroy();
+
+  attackTypeChartInst = new Chart(document.getElementById('attackTypeChart'), {
+    type: 'doughnut',
+    data: {
+      labels: typeLabels,
+      datasets: [{
+        data: typeValues,
+        backgroundColor: PALETTE,
+        borderColor: '#111827',
+        borderWidth: 2,
+        hoverOffset: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'right',
+          labels: { color: '#94a3b8', font: { family: "'DM Sans', sans-serif", size: 11 }, padding: 14, usePointStyle: true, pointStyleWidth: 8 }
+        },
+        tooltip: { ...tooltipStyle }
+      }
+    }
+  });
+
+  /* Commands over time */
+  const byHour = {};
+  data.forEach(cmd => {
+    const d = new Date(cmd.timestamp);
+    const key = d.toISOString().slice(0,10) + ' ' + d.getHours() + ':00';
+    byHour[key] = (byHour[key] || 0) + 1;
+  });
+
+  const tLabels = Object.keys(byHour).sort();
+  const tValues = tLabels.map(k => byHour[k]);
+
+  if (commandsTimeChartInst) commandsTimeChartInst.destroy();
+
+  commandsTimeChartInst = new Chart(document.getElementById('commandsTimeChart'), {
+    type: 'line',
+    data: {
+      labels: tLabels,
+      datasets: [{
+        label: 'Commands',
+        data: tValues,
+        borderColor: '#3b9eff',
+        backgroundColor: (ctx) => {
+          const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 260);
+          g.addColorStop(0, 'rgba(59,158,255,0.25)');
+          g.addColorStop(1, 'rgba(59,158,255,0)');
+          return g;
+        },
+        borderWidth: 2.5,
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#3b9eff',
+        pointBorderColor: '#111827',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false }, tooltip: { ...tooltipStyle } },
+      scales: {
+        x: { grid: gridStyle, ticks: { ...tickStyle, maxRotation: 40, minRotation: 40 } },
+        y: { grid: gridStyle, ticks: tickStyle }
+      }
+    }
+  });
+
+  /* Commands table */
+  const tbody = document.getElementById('commandsTable');
+  tbody.innerHTML = '';
+
+  [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).forEach(cmd => {
+    tbody.innerHTML += `
+      <tr>
+        <td class="timestamp">${fmt(cmd.timestamp)}</td>
+        <td><code class="command-text">${cmd.command}</code></td>
+        <td><span class="attack-badge">${cmd.attack_type || 'Unknown'}</span></td>
+        <td class="timestamp">${cmd.session_id}</td>
+      </tr>`;
+  });
+}
+
+/* ── Chat ───────────────────────────────────────────────────────── */
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const chatbox = document.getElementById('chatbox');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  const userEl = document.createElement('div');
+  userEl.className = 'chat-msg user';
+  userEl.innerHTML = `<b>You</b>${msg}`;
+  chatbox.appendChild(userEl);
+  chatbox.scrollTop = chatbox.scrollHeight;
+  input.value = '';
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+    const botEl = document.createElement('div');
+    botEl.className = 'chat-msg bot';
+    botEl.innerHTML = `<b>Bot</b>${data.reply}`;
+    chatbox.appendChild(botEl);
+    chatbox.scrollTop = chatbox.scrollHeight;
+  } catch {
+    const errEl = document.createElement('div');
+    errEl.className = 'chat-msg bot';
+    errEl.innerHTML = `<b>Bot</b>Error contacting server.`;
+    chatbox.appendChild(errEl);
+  }
+}
+
+/* ── Init ───────────────────────────────────────────────────────── */
+loadAttackersData();
+loadCommandsData();
+</script>
+
+</body>
+</html>

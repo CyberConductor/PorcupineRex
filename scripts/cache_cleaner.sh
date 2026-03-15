@@ -1,5 +1,4 @@
-#!/bin/sh
-
+#!/bin/bash
 LOG=/var/log/system/cache.log
 CACHE_DIR=/var/cache/app
 
@@ -7,7 +6,6 @@ mkdir -p "$CACHE_DIR"
 
 BEFORE=$(du -s "$CACHE_DIR" 2>/dev/null | awk '{print $1}')
 
-# מוחק קבצים ישנים בתיקיית הקאש שגילם מעל 7 ימים
 find "$CACHE_DIR" -type f -mtime +7 -delete
 
 AFTER=$(du -s "$CACHE_DIR" 2>/dev/null | awk '{print $1}')

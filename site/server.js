@@ -7,6 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+app.use(express.static('public'));
 const PORT = 3000;
 
 app.use(express.json());
@@ -23,7 +24,7 @@ async function start() {
         db = client.db("honeypot");
 
         app.get("/", (req, res) => {
-            res.sendFile(path.join(__dirname, "index.html"));
+            res.sendFile(path.join(__dirname, "dashboard.html"));
         });
 
         app.get("/api/hackers", async (req, res) => {
