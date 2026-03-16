@@ -125,8 +125,14 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .stats {
@@ -150,8 +156,10 @@
     .card::before {
       content: '';
       position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
       opacity: 0;
       transition: opacity 0.3s ease;
@@ -163,7 +171,9 @@
       border-color: rgba(59, 130, 246, 0.4);
     }
 
-    .card:hover::before { opacity: 1; }
+    .card:hover::before {
+      opacity: 1;
+    }
 
     .card h2 {
       margin: 0;
@@ -186,42 +196,6 @@
       background-clip: text;
       position: relative;
       z-index: 1;
-    }
-
-    .card-bottom {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      margin-top: 12px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .card-bottom p {
-      margin: 0;
-    }
-
-    .trend {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 2px;
-    }
-
-    .trend-value {
-      font-size: 13px;
-      font-weight: 700;
-      line-height: 1;
-    }
-
-    .trend-value.up   { color: #22c55e; }
-    .trend-value.down { color: #ef4444; }
-    .trend-value.flat { color: #64748b; }
-
-    .trend-label {
-      font-size: 10px;
-      color: #475569;
-      white-space: nowrap;
     }
 
     .charts {
@@ -255,81 +229,11 @@
     }
 
     @media (max-width: 1024px) {
-      .chart-grid { grid-template-columns: 1fr; }
+      .chart-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
-    /* ── Table toolbar ── */
-    .table-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    .search-box {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(2, 6, 23, 0.7);
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      border-radius: 10px;
-      padding: 10px 16px;
-      flex: 1;
-      max-width: 360px;
-      transition: border-color 0.2s;
-    }
-
-    .search-box:focus-within {
-      border-color: rgba(59, 130, 246, 0.6);
-      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-    }
-
-    .search-box svg {
-      flex-shrink: 0;
-      color: #64748b;
-    }
-
-    .search-box input {
-      background: transparent;
-      border: none;
-      outline: none;
-      color: #e5e7eb;
-      font-size: 14px;
-      width: 100%;
-      font-family: inherit;
-    }
-
-    .search-box input::placeholder { color: #475569; }
-
-    .table-info {
-      font-size: 13px;
-      color: #64748b;
-      white-space: nowrap;
-    }
-
-    .reset-sort-btn {
-      padding: 8px 14px;
-      background: rgba(239, 68, 68, 0.1);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      border-radius: 8px;
-      color: #fca5a5;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .reset-sort-btn:hover {
-      background: rgba(239, 68, 68, 0.2);
-      border-color: rgba(239, 68, 68, 0.5);
-      color: #f87171;
-    }
-
-    /* ── Table ── */
     .table-container {
       background: linear-gradient(135deg, rgba(2, 6, 23, 0.9) 0%, rgba(30, 41, 59, 0.6) 100%);
       border-radius: 16px;
@@ -356,175 +260,36 @@
       text-transform: uppercase;
       letter-spacing: 0.5px;
       font-weight: 600;
-      user-select: none;
     }
 
-    th.sortable {
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-
-    th.sortable:hover { color: #cbd5e1; }
-
-    th.sort-asc .sort-icon::after  { content: ' ▲'; font-size: 10px; color: #3b82f6; }
-    th.sort-desc .sort-icon::after { content: ' ▼'; font-size: 10px; color: #3b82f6; }
-    th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: ' ⇅'; font-size: 10px; color: #334155; }
-
-    tbody tr.data-row {
-      cursor: pointer;
+    tbody tr {
       transition: all 0.2s ease;
     }
 
-    tbody tr.data-row:hover {
-      background: rgba(59, 130, 246, 0.07);
+    tbody tr:hover {
+      background: rgba(59, 130, 246, 0.05);
     }
 
-    tbody tr.data-row.expanded {
-      background: rgba(59, 130, 246, 0.1);
-      border-left: 3px solid #3b82f6;
+    tbody tr:last-child td {
+      border-bottom: none;
     }
 
-    tbody tr.expand-row td {
-      padding: 0;
-      border-bottom: 1px solid rgba(148, 163, 184, 0.15);
-    }
-
-    .expand-content {
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height 0.35s ease, padding 0.35s ease;
-      padding: 0 20px;
-    }
-
-    .expand-content.open {
-      max-height: 600px;
-      padding: 16px 20px;
-    }
-
-    .sessions-header {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: #64748b;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .session-item {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      padding: 10px 14px;
-      border-radius: 8px;
-      background: rgba(30, 41, 59, 0.5);
-      margin-bottom: 6px;
-      font-size: 13px;
-      border: 1px solid rgba(148, 163, 184, 0.08);
-      flex-wrap: wrap;
-    }
-
-    .session-item:last-child { margin-bottom: 0; }
-
-    .session-time { color: #64748b; font-size: 12px; }
-    .session-user { color: #cbd5e1; font-weight: 500; }
-
-    .expand-arrow {
-      display: inline-block;
-      transition: transform 0.3s ease;
-      color: #64748b;
+    .sessions {
       font-size: 12px;
-      margin-right: 8px;
+      color: #cbd5e1;
+      padding: 4px 0;
     }
 
-    tr.data-row.expanded .expand-arrow { transform: rotate(90deg); color: #3b82f6; }
-
-    .sessions-count {
-      display: inline-block;
-      background: rgba(59, 130, 246, 0.15);
-      color: #93c5fd;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 8px;
-      border-radius: 20px;
-      border: 1px solid rgba(59, 130, 246, 0.25);
-    }
-
-    tbody tr:last-child td { border-bottom: none; }
-
-    .success { color: #22c55e; font-weight: 600; }
-    .fail    { color: #ef4444; font-weight: 600; }
-
-    .ip-address {
-      font-family: 'Courier New', monospace;
-      color: #fbbf24;
+    .success {
+      color: #22c55e;
       font-weight: 600;
     }
 
-    .timestamp { color: #64748b; font-size: 12px; font-weight: 500; }
-
-    /* ── Pagination ── */
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      padding: 20px;
-      border-top: 1px solid rgba(148, 163, 184, 0.1);
+    .fail {
+      color: #ef4444;
+      font-weight: 600;
     }
 
-    .page-btn {
-      min-width: 36px;
-      height: 36px;
-      padding: 0 10px;
-      background: rgba(30, 41, 59, 0.5);
-      border: 1px solid rgba(148, 163, 184, 0.15);
-      border-radius: 8px;
-      color: #94a3b8;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-    }
-
-    .page-btn:hover:not(:disabled) {
-      background: rgba(59, 130, 246, 0.15);
-      border-color: rgba(59, 130, 246, 0.4);
-      color: #e5e7eb;
-    }
-
-    .page-btn.active {
-      background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
-      border-color: transparent;
-      color: white;
-      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
-    }
-
-    .page-btn:disabled {
-      opacity: 0.3;
-      cursor: not-allowed;
-    }
-
-    .page-ellipsis {
-      color: #475569;
-      padding: 0 4px;
-      font-size: 13px;
-    }
-
-    /* ── Empty state ── */
-    .empty-state {
-      text-align: center;
-      padding: 48px 20px;
-      color: #475569;
-    }
-
-    .empty-state svg { margin-bottom: 12px; opacity: 0.4; }
-    .empty-state p { font-size: 14px; }
-
-    /* ── Commands section ── */
     .attack-badge {
       display: inline-block;
       padding: 6px 12px;
@@ -548,10 +313,48 @@
       border: 1px solid rgba(6, 182, 212, 0.2);
     }
 
-    ::-webkit-scrollbar { width: 10px; height: 10px; }
-    ::-webkit-scrollbar-track { background: rgba(30, 41, 59, 0.3); }
-    ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 5px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.7); }
+    .timestamp {
+      color: #64748b;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .ip-address {
+      font-family: 'Courier New', monospace;
+      color: #fbbf24;
+      font-weight: 600;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(30, 41, 59, 0.3);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(59, 130, 246, 0.5);
+      border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(59, 130, 246, 0.7);
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    .loading {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
   </style>
 </head>
 
@@ -559,34 +362,32 @@
 <header>
   <h1>🛡️ Honeypot Security Dashboard</h1>
   <div class="nav-tabs">
-    <button class="nav-tab active" onclick="switchTab('attackers', this)">👤 Attackers (IPs)</button>
-    <button class="nav-tab"        onclick="switchTab('commands', this)">⚔️ Commands & Attacks</button>
+    <button class="nav-tab active" onclick="switchTab('attackers')">
+      👤 Attackers (IPs)
+    </button>
+    <button class="nav-tab" onclick="switchTab('commands')">
+      ⚔️ Commands & Attacks
+    </button>
   </div>
 </header>
 
 <div class="container">
 
-  <!-- ═══════════════  ATTACKERS SECTION  ═══════════════ -->
   <div id="attackers-section" class="section active">
     <div class="stats">
       <div class="card">
         <h2>Total Attackers</h2>
-        <div class="card-bottom">
-          <p id="totalAttackers">0</p>
-        </div>
+        <p id="totalAttackers">0</p>
       </div>
+
       <div class="card">
         <h2>Total Failed Attempts</h2>
-        <div class="card-bottom">
-          <p id="totalFails">0</p>
-          <div class="trend" id="trendTotalFails"></div>
-        </div>
+        <p id="totalFails">0</p>
       </div>
+
       <div class="card">
         <h2>Unique IPs</h2>
-        <div class="card-bottom">
-          <p id="uniqueIps">0</p>
-        </div>
+        <p id="uniqueIps">0</p>
       </div>
     </div>
 
@@ -595,65 +396,36 @@
       <canvas id="attackChart"></canvas>
     </div>
 
-    <!-- Toolbar -->
-    <div class="table-toolbar">
-      <div class="search-box">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-        </svg>
-        <input id="attackerSearch" type="text" placeholder="Search by IP address…" oninput="onSearchChange()">
-      </div>
-      <button id="resetSortBtn" class="reset-sort-btn" onclick="resetSort()" style="display:none;">
-        ✕ Reset Sort
-      </button>
-      <div class="table-info" id="attackerTableInfo"></div>
-    </div>
-
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th></th><!-- expand arrow col -->
-            <th class="sortable" onclick="sortAttackers('ip')">
-              IP Address <span class="sort-icon"></span>
-            </th>
-            <th class="sortable" onclick="sortAttackers('first_seen')">
-              First Seen <span class="sort-icon"></span>
-            </th>
-            <th class="sortable" onclick="sortAttackers('failed_attempts')">
-              Failed Attempts <span class="sort-icon"></span>
-            </th>
+            <th>IP Address</th>
+            <th>First Seen</th>
+            <th>Failed Attempts</th>
             <th>Sessions</th>
           </tr>
         </thead>
         <tbody id="hackersTable"></tbody>
       </table>
-      <div class="pagination" id="attackerPagination"></div>
     </div>
   </div>
 
-  <!-- ═══════════════  COMMANDS SECTION  ═══════════════ -->
   <div id="commands-section" class="section">
     <div class="stats">
       <div class="card">
         <h2>Total Commands</h2>
-        <div class="card-bottom">
-          <p id="totalCommands">0</p>
-          <div class="trend" id="trendTotalCommands"></div>
-        </div>
+        <p id="totalCommands">0</p>
       </div>
+
       <div class="card">
         <h2>Unique Attack Types</h2>
-        <div class="card-bottom">
-          <p id="uniqueAttackTypes">0</p>
-          <div class="trend" id="trendUniqueTypes"></div>
-        </div>
+        <p id="uniqueAttackTypes">0</p>
       </div>
+
       <div class="card">
         <h2>Most Common Attack</h2>
-        <div class="card-bottom">
-          <p id="topAttackType" style="font-size: 18px;">-</p>
-        </div>
+        <p id="topAttackType" style="font-size: 18px;">-</p>
       </div>
     </div>
 
@@ -662,6 +434,7 @@
         <h3>🎯 Attack Types Distribution</h3>
         <canvas id="attackTypeChart"></canvas>
       </div>
+
       <div class="charts">
         <h3>📈 Commands Over Time</h3>
         <canvas id="commandsTimeChart"></canvas>
@@ -680,361 +453,102 @@
         </thead>
         <tbody id="commandsTable"></tbody>
       </table>
-      <div class="pagination" id="commandsPagination"></div>
     </div>
+     <div class="charts" style="margin-top:40px;">
+    <h3>🤖 Chat with Dashboard Bot</h3>
+    <div id="chatbox" style="background: rgba(30,41,59,0.6); padding:15px; border-radius:12px; height:250px; overflow-y:auto; margin-bottom:10px;"></div>
+    <input type="text" id="chatInput" placeholder="Type a question..." style="width:75%; padding:8px; border-radius:8px; border:none; margin-right:5px;">
+    <button onclick="sendChat()" style="padding:8px 15px; border-radius:8px; border:none; background:#3b82f6; color:white; cursor:pointer;">Send</button>
+  </div>
+</div>
 
-    <div class="charts" style="margin-top:40px;">
-      <h3>🤖 Chat with Dashboard Bot</h3>
-      <div id="chatbox" style="background: rgba(30,41,59,0.6); padding:15px; border-radius:12px; height:250px; overflow-y:auto; margin-bottom:10px;"></div>
-      <input type="text" id="chatInput" placeholder="Type a question…"
-        style="width:75%; padding:8px; border-radius:8px; border:none; margin-right:5px;"
-        onkeydown="if(event.key==='Enter') sendChat()">
-      <button onclick="sendChat()" style="padding:8px 15px; border-radius:8px; border:none; background:#3b82f6; color:white; cursor:pointer;">Send</button>
-    </div>
+<script>
+async function sendChat() {
+  const input = document.getElementById("chatInput");
+  const chatbox = document.getElementById("chatbox");
+  const msg = input.value.trim();
+  if (!msg) return;
+  chatbox.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+  chatbox.scrollTop = chatbox.scrollHeight;
+  input.value = "";
+
+  try {
+    const res = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: msg })
+    });
+    const data = await res.json();
+    chatbox.innerHTML += `<div><b>Bot:</b> ${data.reply}</div>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
+  } catch (err) {
+    chatbox.innerHTML += `<div><b>Bot:</b> Error contacting server.</div>`;
+  }
+}
+</script>
   </div>
 
 </div>
 
 <script>
-/* ═══════════════════════════════════════════════
-   STATE
-═══════════════════════════════════════════════ */
-let allAttackers      = [];   // raw data from API
-let filteredAttackers = [];   // after search filter
-let sortKey           = 'failed_attempts';
-let sortDir           = 'desc';
-let currentPage       = 1;
-let commandsPage      = 1;
-let allCommandsSorted = [];
-const PAGE_SIZE       = 25;
-const expandedRows    = new Set();
-
-let attackChartInstance      = null;
-let attackTypeChartInstance  = null;
+let attackChartInstance = null;
+let attackTypeChartInstance = null;
 let commandsTimeChartInstance = null;
 
-/* ═══════════════════════════════════════════════
-   TAB SWITCHING
-═══════════════════════════════════════════════ */
-function switchTab(tab, btn) {
-  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+function switchTab(tab) {
+  document.querySelectorAll('.nav-tab').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  event.target.classList.add('active');
+
+  document.querySelectorAll('.section').forEach(section => {
+    section.classList.remove('active');
+  });
   document.getElementById(tab + '-section').classList.add('active');
 }
 
-/* ═══════════════════════════════════════════════
-   TREND INDICATOR HELPER
-═══════════════════════════════════════════════ */
-function renderTrend(elementId, current, previous) {
-  const el = document.getElementById(elementId);
-  if (!el) return;
-
-  if (previous === 0 && current === 0) {
-    el.innerHTML = `
-      <span class="trend-value flat">→ 0%</span>
-      <span class="trend-label">vs 24h ago</span>`;
-    return;
-  }
-
-  if (previous === 0) {
-    el.innerHTML = `
-      <span class="trend-value up">▲ new</span>
-      <span class="trend-label">vs 24h ago</span>`;
-    return;
-  }
-
-  const pct  = Math.round(((current - previous) / previous) * 100);
-  const cls  = pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat';
-  const arrow = pct > 0 ? '▲' : pct < 0 ? '▼' : '→';
-
-  el.innerHTML = `
-    <span class="trend-value ${cls}">${arrow} ${Math.abs(pct)}%</span>
-    <span class="trend-label">vs 24h ago</span>`;
-}
-
-/* ═══════════════════════════════════════════════
-   ATTACKERS — DATA LOAD
-═══════════════════════════════════════════════ */
 async function loadAttackersData() {
-  const res  = await fetch('/api/hackers');
+  const res = await fetch('/api/hackers');
   const data = await res.json();
-  allAttackers = data;
 
-  // Stats
   document.getElementById('totalAttackers').innerText = data.length;
   document.getElementById('uniqueIps').innerText = new Set(data.map(h => h.ip)).size;
+  document.getElementById('totalFails').innerText =
+    data.reduce((sum, h) => sum + (h.failed_attempts || 0), 0);
 
-  // Failed attempts trend — based on sessions timestamps
-  const now       = Date.now();
-  const ms24h     = 24 * 60 * 60 * 1000;
-  const cutoff24h = now - ms24h;
-  const cutoff48h = now - ms24h * 2;
+  const labels = [];
+  const values = [];
 
-  let failsLast24 = 0, failsPrev24 = 0;
+  const table = document.getElementById('hackersTable');
+  table.innerHTML = '';
+
   data.forEach(h => {
-    (h.sessions || []).forEach(s => {
-      if (!s.success) {
-        const t = new Date(s.time).getTime();
-        if (t >= cutoff24h)       failsLast24++;
-        else if (t >= cutoff48h)  failsPrev24++;
-      }
-    });
+    labels.push(h.ip);
+    values.push(h.failed_attempts || 0);
+
+    const sessionsHtml = (h.sessions || []).map(s =>
+      `<div class="sessions">
+        ${new Date(s.time).toLocaleString()} |
+        user: <strong>${s.user}</strong> |
+        <span class="${s.success ? 'success' : 'fail'}">
+          ${s.success ? '✓ SUCCESS' : '✗ FAIL'}
+        </span>
+      </div>`
+    ).join('');
+
+    table.innerHTML += `
+      <tr>
+        <td><span class="ip-address">${h.ip}</span></td>
+        <td class="timestamp">${new Date(h.first_seen).toLocaleString()}</td>
+        <td><strong>${h.failed_attempts || 0}</strong></td>
+        <td>${sessionsHtml || '<span class="timestamp">No sessions</span>'}</td>
+      </tr>
+    `;
   });
 
-  const totalFails = data.reduce((sum, h) => sum + (h.failed_attempts || 0), 0);
-  document.getElementById('totalFails').innerText = totalFails;
-  renderTrend('trendTotalFails', failsLast24, failsPrev24);
-
-  // Chart
-  renderAttackChart(data);
-
-  // Table
-  applyFilterAndSort();
-}
-
-/* ═══════════════════════════════════════════════
-   ATTACKERS — SEARCH
-═══════════════════════════════════════════════ */
-function onSearchChange() {
-  currentPage = 1;
-  applyFilterAndSort();
-}
-
-/* ═══════════════════════════════════════════════
-   ATTACKERS — SORT
-═══════════════════════════════════════════════ */
-function sortAttackers(key) {
-  if (sortKey === key) {
-    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-  } else {
-    sortKey = key;
-    sortDir = key === 'failed_attempts' ? 'desc' : 'asc';
+  if (attackChartInstance) {
+    attackChartInstance.destroy();
   }
-  currentPage = 1;
-  applyFilterAndSort();
-  updateSortHeaders();
-}
-
-function updateSortHeaders() {
-  const DEFAULT_KEY = 'failed_attempts';
-  const DEFAULT_DIR = 'desc';
-  const keyToIndex = { ip: 1, first_seen: 2, failed_attempts: 3 };
-
-  document.querySelectorAll('#attackers-section th.sortable').forEach(th => {
-    th.classList.remove('sort-asc', 'sort-desc');
-  });
-
-  const idx = keyToIndex[sortKey];
-  if (idx !== undefined) {
-    const th = document.querySelectorAll('#attackers-section th.sortable')[idx - 1];
-    if (th) th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
-  }
-
-  // Show reset button only when sort differs from default
-  const isDefault = sortKey === DEFAULT_KEY && sortDir === DEFAULT_DIR;
-  document.getElementById('resetSortBtn').style.display = isDefault ? 'none' : 'inline-flex';
-}
-
-function resetSort() {
-  sortKey = 'failed_attempts';
-  sortDir = 'desc';
-  currentPage = 1;
-  applyFilterAndSort();
-}
-
-/* ═══════════════════════════════════════════════
-   ATTACKERS — FILTER + SORT + RENDER
-═══════════════════════════════════════════════ */
-function applyFilterAndSort() {
-  const query = (document.getElementById('attackerSearch').value || '').toLowerCase();
-
-  filteredAttackers = allAttackers.filter(h =>
-    !query || (h.ip || '').toLowerCase().includes(query)
-  );
-
-  filteredAttackers.sort((a, b) => {
-    let av = a[sortKey], bv = b[sortKey];
-    if (sortKey === 'first_seen') { av = new Date(av); bv = new Date(bv); }
-    if (sortKey === 'failed_attempts') { av = av || 0; bv = bv || 0; }
-    if (sortKey === 'ip') {
-      const toNum = ip => (ip || '').split('.').map(n => parseInt(n, 10).toString().padStart(3, '0')).join('');
-      av = toNum(a.ip); bv = toNum(b.ip);
-    }
-    if (av < bv) return sortDir === 'asc' ? -1 :  1;
-    if (av > bv) return sortDir === 'asc' ?  1 : -1;
-    return 0;
-  });
-
-  renderAttackersTable();
-  renderPagination();
-  updateSortHeaders();
-}
-
-/* ═══════════════════════════════════════════════
-   ATTACKERS — RENDER TABLE
-═══════════════════════════════════════════════ */
-function renderAttackersTable() {
-  const tbody = document.getElementById('hackersTable');
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const page  = filteredAttackers.slice(start, start + PAGE_SIZE);
-
-  // Table info label
-  const total = filteredAttackers.length;
-  const from  = total === 0 ? 0 : start + 1;
-  const to    = Math.min(start + PAGE_SIZE, total);
-  document.getElementById('attackerTableInfo').innerText =
-    total === 0 ? 'No results' : `Showing ${from}–${to} of ${total}`;
-
-  if (page.length === 0) {
-    tbody.innerHTML = `
-      <tr><td colspan="5">
-        <div class="empty-state">
-          <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-          </svg>
-          <p>No attackers match your search.</p>
-        </div>
-      </td></tr>`;
-    return;
-  }
-
-  tbody.innerHTML = '';
-
-  page.forEach((h, idx) => {
-    const globalIdx = start + idx;
-    const rowId     = `row-${globalIdx}`;
-    const isExpanded = expandedRows.has(h.ip);
-    const sessCount  = (h.sessions || []).length;
-
-    // ── Main row ──
-    const tr = document.createElement('tr');
-    tr.className = 'data-row' + (isExpanded ? ' expanded' : '');
-    tr.setAttribute('data-ip', h.ip);
-    tr.onclick = () => toggleExpand(h.ip, tr);
-
-    tr.innerHTML = `
-      <td style="width:28px; padding-right:0;">
-        <span class="expand-arrow">▶</span>
-      </td>
-      <td><span class="ip-address">${h.ip}</span></td>
-      <td class="timestamp">${new Date(h.first_seen).toLocaleString()}</td>
-      <td><strong>${h.failed_attempts || 0}</strong></td>
-      <td>
-        <span class="sessions-count">${sessCount} session${sessCount !== 1 ? 's' : ''}</span>
-      </td>`;
-
-    tbody.appendChild(tr);
-
-    // ── Expand row ──
-    const expandTr = document.createElement('tr');
-    expandTr.className = 'expand-row';
-    expandTr.setAttribute('data-expand-for', h.ip);
-
-    const sessionsHtml = sessCount === 0
-      ? '<p style="color:#475569; font-size:13px;">No sessions recorded.</p>'
-      : (h.sessions || []).map(s => `
-          <div class="session-item">
-            <span class="session-time">${new Date(s.time).toLocaleString()}</span>
-            <span class="session-user">user: <strong>${s.user}</strong></span>
-            <span class="${s.success ? 'success' : 'fail'}">
-              ${s.success ? '✓ SUCCESS' : '✗ FAIL'}
-            </span>
-          </div>`).join('');
-
-    expandTr.innerHTML = `
-      <td colspan="5">
-        <div class="expand-content ${isExpanded ? 'open' : ''}">
-          <div class="sessions-header">Sessions for ${h.ip}</div>
-          ${sessionsHtml}
-        </div>
-      </td>`;
-
-    tbody.appendChild(expandTr);
-  });
-}
-
-/* ═══════════════════════════════════════════════
-   ATTACKERS — EXPAND / COLLAPSE
-═══════════════════════════════════════════════ */
-function toggleExpand(ip, tr) {
-  const expandTr  = tr.nextElementSibling;
-  const content   = expandTr.querySelector('.expand-content');
-  const isOpen    = expandedRows.has(ip);
-
-  if (isOpen) {
-    expandedRows.delete(ip);
-    tr.classList.remove('expanded');
-    content.classList.remove('open');
-  } else {
-    expandedRows.add(ip);
-    tr.classList.add('expanded');
-    content.classList.add('open');
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   ATTACKERS — PAGINATION
-═══════════════════════════════════════════════ */
-function renderPagination() {
-  const totalPages = Math.ceil(filteredAttackers.length / PAGE_SIZE);
-  const container  = document.getElementById('attackerPagination');
-
-  if (totalPages <= 1) { container.innerHTML = ''; return; }
-
-  let html = '';
-
-  // Prev
-  html += `<button class="page-btn" onclick="goToPage(${currentPage - 1})"
-    ${currentPage === 1 ? 'disabled' : ''}>‹</button>`;
-
-  // Page numbers with ellipsis
-  const pages = getPageNumbers(currentPage, totalPages);
-  pages.forEach(p => {
-    if (p === '…') {
-      html += `<span class="page-ellipsis">…</span>`;
-    } else {
-      html += `<button class="page-btn ${p === currentPage ? 'active' : ''}"
-        onclick="goToPage(${p})">${p}</button>`;
-    }
-  });
-
-  // Next
-  html += `<button class="page-btn" onclick="goToPage(${currentPage + 1})"
-    ${currentPage === totalPages ? 'disabled' : ''}>›</button>`;
-
-  container.innerHTML = html;
-}
-
-function getPageNumbers(current, total) {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-  const pages = [];
-  pages.push(1);
-  if (current > 3)          pages.push('…');
-  for (let p = Math.max(2, current - 1); p <= Math.min(total - 1, current + 1); p++) pages.push(p);
-  if (current < total - 2)  pages.push('…');
-  pages.push(total);
-  return pages;
-}
-
-function goToPage(page) {
-  const totalPages = Math.ceil(filteredAttackers.length / PAGE_SIZE);
-  if (page < 1 || page > totalPages) return;
-  currentPage = page;
-  renderAttackersTable();
-  renderPagination();
-}
-
-/* ═══════════════════════════════════════════════
-   ATTACKERS — CHART
-═══════════════════════════════════════════════ */
-function renderAttackChart(data) {
-  const labels = data.map(h => h.ip);
-  const values = data.map(h => h.failed_attempts || 0);
-
-  if (attackChartInstance) attackChartInstance.destroy();
-
-  const isHorizontal = labels.length > 10;
 
   attackChartInstance = new Chart(document.getElementById('attackChart'), {
     type: 'bar',
@@ -1044,9 +558,7 @@ function renderAttackChart(data) {
         label: 'Failed Attempts',
         data: values,
         backgroundColor: function(context) {
-          const gradient = isHorizontal
-            ? context.chart.ctx.createLinearGradient(400, 0, 0, 0)
-            : context.chart.ctx.createLinearGradient(0, 0, 0, 400);
+          const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 400);
           gradient.addColorStop(0, 'rgba(239, 68, 68, 0.8)');
           gradient.addColorStop(1, 'rgba(239, 68, 68, 0.4)');
           return gradient;
@@ -1057,10 +569,8 @@ function renderAttackChart(data) {
       }]
     },
     options: {
-      indexAxis: isHorizontal ? 'y' : 'x',
       responsive: true,
-      maintainAspectRatio: !isHorizontal,
-      ...(isHorizontal && { aspectRatio: 1.2 }),
+      maintainAspectRatio: true,
       plugins: {
         legend: { display: false },
         tooltip: {
@@ -1074,45 +584,35 @@ function renderAttackChart(data) {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(148, 163, 184, 0.1)', drawBorder: false },
-          ticks: { color: '#94a3b8', font: { size: 11 } }
+          grid: {
+            color: 'rgba(148, 163, 184, 0.1)',
+            drawBorder: false
+          },
+          ticks: {
+            color: '#94a3b8',
+            font: { size: 11 }
+          }
         },
         y: {
-          grid: { color: 'rgba(148, 163, 184, 0.1)', drawBorder: false },
-          ticks: { color: '#94a3b8', font: { size: 11 } }
+          grid: {
+            color: 'rgba(148, 163, 184, 0.1)',
+            drawBorder: false
+          },
+          ticks: {
+            color: '#94a3b8',
+            font: { size: 11 }
+          }
         }
       }
     }
   });
 }
 
-/* ═══════════════════════════════════════════════
-   COMMANDS SECTION
-═══════════════════════════════════════════════ */
 async function loadCommandsData() {
-  const res  = await fetch('/api/commands');
+  const res = await fetch('/api/commands');
   const data = await res.json();
 
   document.getElementById('totalCommands').innerText = data.length;
-
-  // Trend — commands in last 24h vs previous 24h
-  const now       = Date.now();
-  const ms24h     = 24 * 60 * 60 * 1000;
-  const cutoff24h = now - ms24h;
-  const cutoff48h = now - ms24h * 2;
-
-  const cmdsLast24 = data.filter(c => new Date(c.timestamp).getTime() >= cutoff24h);
-  const cmdsPrev24 = data.filter(c => {
-    const t = new Date(c.timestamp).getTime();
-    return t >= cutoff48h && t < cutoff24h;
-  });
-
-  renderTrend('trendTotalCommands', cmdsLast24.length, cmdsPrev24.length);
-
-  // Unique attack types trend
-  const typesLast24 = new Set(cmdsLast24.map(c => c.attack_type || 'Unknown')).size;
-  const typesPrev24 = new Set(cmdsPrev24.map(c => c.attack_type || 'Unknown')).size;
-  renderTrend('trendUniqueTypes', typesLast24, typesPrev24);
 
   const attackTypeCounts = {};
   data.forEach(cmd => {
@@ -1123,17 +623,23 @@ async function loadCommandsData() {
   const uniqueTypes = Object.keys(attackTypeCounts).length;
   document.getElementById('uniqueAttackTypes').innerText = uniqueTypes;
 
-  let topType = 'Unknown', maxCount = 0;
+  let topType = 'Unknown';
+  let maxCount = 0;
   for (const [type, count] of Object.entries(attackTypeCounts)) {
-    if (count > maxCount) { maxCount = count; topType = type; }
+    if (count > maxCount) {
+      maxCount = count;
+      topType = type;
+    }
   }
   document.getElementById('topAttackType').innerText = topType;
 
-  // Doughnut
   const attackTypeLabels = Object.keys(attackTypeCounts);
   const attackTypeValues = Object.values(attackTypeCounts);
 
-  if (attackTypeChartInstance) attackTypeChartInstance.destroy();
+  if (attackTypeChartInstance) {
+    attackTypeChartInstance.destroy();
+  }
+
   attackTypeChartInstance = new Chart(document.getElementById('attackTypeChart'), {
     type: 'doughnut',
     data: {
@@ -1141,9 +647,9 @@ async function loadCommandsData() {
       datasets: [{
         data: attackTypeValues,
         backgroundColor: [
-          '#ef4444','#f97316','#f59e0b','#eab308','#84cc16',
-          '#22c55e','#10b981','#14b8a6','#06b6d4','#0ea5e9',
-          '#3b82f6','#6366f1','#8b5cf6','#a855f7','#d946ef'
+          '#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16',
+          '#22c55e', '#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
+          '#3b82f6', '#6366f1', '#8b5cf6', '#a855f7', '#d946ef'
         ],
         borderColor: 'rgba(2, 6, 23, 0.8)',
         borderWidth: 2
@@ -1156,7 +662,12 @@ async function loadCommandsData() {
         legend: {
           display: true,
           position: 'right',
-          labels: { color: '#cbd5e1', font: { size: 11, weight: '500' }, padding: 12, usePointStyle: true }
+          labels: {
+            color: '#cbd5e1',
+            font: { size: 11, weight: '500' },
+            padding: 12,
+            usePointStyle: true
+          }
         },
         tooltip: {
           backgroundColor: 'rgba(2, 6, 23, 0.95)',
@@ -1170,17 +681,20 @@ async function loadCommandsData() {
     }
   });
 
-  // Time line
   const commandsByHour = {};
   data.forEach(cmd => {
     const date = new Date(cmd.timestamp);
     const hour = date.toISOString().split('T')[0] + ' ' + date.getHours() + ':00';
     commandsByHour[hour] = (commandsByHour[hour] || 0) + 1;
   });
-  const timeLabels = Object.keys(commandsByHour).sort();
-  const timeValues = timeLabels.map(l => commandsByHour[l]);
 
-  if (commandsTimeChartInstance) commandsTimeChartInstance.destroy();
+  const timeLabels = Object.keys(commandsByHour).sort();
+  const timeValues = timeLabels.map(label => commandsByHour[label]);
+
+  if (commandsTimeChartInstance) {
+    commandsTimeChartInstance.destroy();
+  }
+
   commandsTimeChartInstance = new Chart(document.getElementById('commandsTimeChart'), {
     type: 'line',
     data: {
@@ -1221,98 +735,55 @@ async function loadCommandsData() {
       },
       scales: {
         x: {
-          grid: { color: 'rgba(148, 163, 184, 0.1)', drawBorder: false },
-          ticks: { color: '#94a3b8', maxRotation: 45, minRotation: 45, font: { size: 10 } }
+          grid: {
+            color: 'rgba(148, 163, 184, 0.1)',
+            drawBorder: false
+          },
+          ticks: {
+            color: '#94a3b8',
+            maxRotation: 45,
+            minRotation: 45,
+            font: { size: 10 }
+          }
         },
         y: {
-          grid: { color: 'rgba(148, 163, 184, 0.1)', drawBorder: false },
-          ticks: { color: '#94a3b8', font: { size: 11 } }
+          grid: {
+            color: 'rgba(148, 163, 184, 0.1)',
+            drawBorder: false
+          },
+          ticks: {
+            color: '#94a3b8',
+            font: { size: 11 }
+          }
         }
       }
     }
   });
 
-  // Commands table — store sorted data and render first page
-  allCommandsSorted = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-  commandsPage = 1;
-  renderCommandsTable();
-}
-
-function renderCommandsTable() {
-  const table  = document.getElementById('commandsTable');
-  const start  = (commandsPage - 1) * PAGE_SIZE;
-  const page   = allCommandsSorted.slice(start, start + PAGE_SIZE);
-
+  const table = document.getElementById('commandsTable');
   table.innerHTML = '';
-  page.forEach(cmd => {
-    const badge = cmd.attack_type
+
+  const sortedData = [...data].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+  sortedData.forEach(cmd => {
+    const attackTypeBadge = cmd.attack_type
       ? `<span class="attack-badge">${cmd.attack_type}</span>`
       : '<span class="attack-badge">Unknown</span>';
+
     table.innerHTML += `
       <tr>
         <td class="timestamp">${new Date(cmd.timestamp).toLocaleString()}</td>
         <td><code class="command-text">${cmd.command}</code></td>
-        <td>${badge}</td>
+        <td>${attackTypeBadge}</td>
         <td class="timestamp">${cmd.session_id}</td>
-      </tr>`;
+      </tr>
+    `;
   });
-
-  // Pagination
-  const totalPages = Math.ceil(allCommandsSorted.length / PAGE_SIZE);
-  const container  = document.getElementById('commandsPagination');
-  if (totalPages <= 1) { container.innerHTML = ''; return; }
-
-  let html = '';
-  html += `<button class="page-btn" onclick="goToCommandsPage(${commandsPage - 1})" ${commandsPage === 1 ? 'disabled' : ''}>‹</button>`;
-  getPageNumbers(commandsPage, totalPages).forEach(p => {
-    if (p === '…') html += `<span class="page-ellipsis">…</span>`;
-    else html += `<button class="page-btn ${p === commandsPage ? 'active' : ''}" onclick="goToCommandsPage(${p})">${p}</button>`;
-  });
-  html += `<button class="page-btn" onclick="goToCommandsPage(${commandsPage + 1})" ${commandsPage === totalPages ? 'disabled' : ''}>›</button>`;
-  container.innerHTML = html;
 }
 
-function goToCommandsPage(page) {
-  const totalPages = Math.ceil(allCommandsSorted.length / PAGE_SIZE);
-  if (page < 1 || page > totalPages) return;
-  commandsPage = page;
-  renderCommandsTable();
-}
-
-/* ═══════════════════════════════════════════════
-   CHAT BOT
-═══════════════════════════════════════════════ */
-async function sendChat() {
-  const input   = document.getElementById('chatInput');
-  const chatbox = document.getElementById('chatbox');
-  const msg     = input.value.trim();
-  if (!msg) return;
-
-  const safeMsg = msg.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  chatbox.innerHTML += `<div><b>You:</b> ${safeMsg}</div>`;
-  chatbox.scrollTop = chatbox.scrollHeight;
-  input.value = '';
-
-  try {
-    const res  = await fetch('/api/chat', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: msg })
-    });
-    const data = await res.json();
-    const safeReply = (data.reply || '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    chatbox.innerHTML += `<div><b>Bot:</b> ${safeReply}</div>`;
-    chatbox.scrollTop = chatbox.scrollHeight;
-  } catch {
-    chatbox.innerHTML += `<div><b>Bot:</b> Error contacting server.</div>`;
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   INIT
-═══════════════════════════════════════════════ */
 loadAttackersData();
 loadCommandsData();
 </script>
+
 </body>
 </html>
