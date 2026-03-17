@@ -15,7 +15,7 @@ logpath="$LOGDIR/$session_id.log"
 #docker image to use(linux distro):
 IMAGE="ubuntu:latest"
 
-# resource and security limits
+#resource and security limits
 MEM_LIMIT="200m"
 CPU_SHARES="512"
 PIDS_LIMIT="64"
