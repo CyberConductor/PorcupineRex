@@ -1,59 +1,60 @@
 #!/bin/bash
 
-# path to the attacker log
-LOG_FILE="/honeypot-logs/attacker_activity.log"
+LOG_FILE="/var/log/attack_monitor.log"
+ALERT_SERVERS="alerts.txt"
+RISK_SCORE=0
+THRESHOLD=8
 
-# file containing alert server addresses (IP or hostname)
-ALERT_SERVERS="/usr/local/bin/alerts.txt"
-
-# risk scoring
-risk_score=0
-threshold=8
+#Choose mode: "ssh" or "http"
+MODE="ssh"
 
 echo "[*] monitoring attacker behaviour..."
 
-mapfile -t servers < "$ALERT_SERVERS"
+mapfile -t SERVERS < "$ALERT_SERVERS"
 
-while IFS= read -r line
+tail -F "$LOG_FILE" | while read line
 do
     if [[ "$line" =~ whoami|id|uname|ps\ aux|pwd ]]; then
-        ((risk_score++))
+        RISK_SCORE=$((RISK_SCORE + 1))
         echo "[info] reconnaissance detected"
     fi
 
     if [[ "$line" =~ ifconfig|ip\ a|netstat|ss\ -tulpn ]]; then
-        ((risk_score+=2))
+        RISK_SCORE=$((RISK_SCORE + 2))
         echo "[info] network probing detected"
     fi
 
-    #privilege escalation attempts
     if [[ "$line" =~ sudo\ -l|find\ /.*-perm|getcap ]]; then
-        ((risk_score+=3))
+        RISK_SCORE=$((RISK_SCORE + 3))
         echo "[info] privilege escalation attempt"
     fi
 
     if [[ "$line" =~ wget|curl|scp ]]; then
-        ((risk_score+=4))
+        RISK_SCORE=$((RISK_SCORE + 4))
         echo "[warning] payload download attempt"
     fi
 
     if [[ "$line" =~ chmod\ \+x|\./|bash\ .*\.sh ]]; then
-        ((risk_score+=5))
+        RISK_SCORE=$((RISK_SCORE + 5))
         echo "[danger] payload execution attempt"
     fi
 
-    echo "[score] current risk score: $risk_score"
-    if [ "$risk_score" -ge "$threshold" ]; then
-        echo "[!!!] attacker likely preparing an attack, sending alerts..."
+    echo "[score] current risk score: $RISK_SCORE"
 
-        for server in "${servers[@]}"; do
-            curl -s -X POST "http://$server:5000/alert" \
-                -d "host=$(hostname)&time=$(date +'%Y-%m-%d %H:%M:%S')&score=$risk_score" &
+    if [ "$RISK_SCORE" -ge "$THRESHOLD" ]; then
+        echo "[!!!] attacker likely preparing an attack"
+
+        for SERVER in "${SERVERS[@]}"; do
+            if [ "$MODE" = "ssh" ]; then
+                #SSH option (requires keys set up)
+                ssh -i /home/ho/.ssh/id_rsa -o StrictHostKeyChecking=no "$SERVER" "echo '[ALERT] Attack detected on $(hostname) at $(date)' >> /tmp/alerts.log" &
+            else
+                #HTTP POST option (requires listener)
+                curl -s -X POST "http://$SERVER:5000/alert" \
+                     -d "host=$(hostname)&time=$(date)&score=$RISK_SCORE" &
+            fi
         done
 
-        #reset risk score after alert
-        risk_score=0
+        RISK_SCORE=0
     fi
-
-#read log
-done < <(tail -F "$LOG_FILE")
+done
