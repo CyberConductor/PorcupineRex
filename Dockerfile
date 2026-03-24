@@ -54,6 +54,13 @@ COPY vsftpd.conf /etc/vsftpd.conf
 COPY errors.log /usr/local/share/errors.log
 COPY inject_errors.sh /usr/local/bin/inject_errors.sh
 
+COPY alert_server.sh /usr/local/bin/alert_server.sh
+COPY alerts.txt /usr/local/bin/alerts.txt
+
+RUN chown root:root /usr/local/bin/alert_server.sh /usr/local/bin/alerts.txt \
+ && chmod 700 /usr/local/bin/alert_server.sh \
+ && chmod 600 /usr/local/bin/alerts.txt
+ 
 #PAM config
 RUN mkdir -p /etc/pam.d \
  && echo "auth    required pam_unix.so" > /etc/pam.d/vsftpd \
