@@ -4,7 +4,6 @@
   "description": "",
   "main": "server.js",
   "type": "module",
-  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
@@ -14,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^5.2.1",
-    "mongodb": "^7.1.0"
+    "mongodb": "^7.1.0",
+    "node-nlp": "^3.10.2"
   }
 }

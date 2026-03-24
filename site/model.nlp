@@ -1,0 +1,818 @@
+{
+  "settings": {
+    "languages": [
+      "en",
+      "he"
+    ]
+  },
+  "nluManager": {
+    "settings": {},
+    "languages": [
+      "en",
+      "he"
+    ],
+    "intentDomains": {},
+    "domainManagers": {
+      "en": {
+        "settings": {
+          "language": "en",
+          "useNoneFeature": true,
+          "config": {
+            "activation": "leaky-relu",
+            "hiddenLayers": [],
+            "iterations": 20000,
+            "learningRate": 0.7,
+            "errorThresh": 0.00005,
+            "momentum": 0.5,
+            "deltaErrorThresh": 0.000001,
+            "maxDecimals": 9,
+            "leakyReluAlpha": 0.08,
+            "timeout": 120000
+          }
+        },
+        "language": "en",
+        "nluClassName": "BrainNLU",
+        "useMasterDomain": true,
+        "trainByDomain": false,
+        "keepStopwords": true,
+        "stemDict": {
+          "are,hacker,how,mani,there": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "attack,show": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "intrud,number,of": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "how,mani,threat": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "ani,are,hacker,there": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "hacker,me,show": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "command,show": {
+            "domain": "default",
+            "intent": "commands.list"
+          },
+          "attack,exist,what": {
+            "domain": "default",
+            "intent": "commands.list"
+          },
+          "list,payload": {
+            "domain": "default",
+            "intent": "commands.list"
+          },
+          "command,give,me": {
+            "domain": "default",
+            "intent": "commands.list"
+          },
+          "all,attack,list": {
+            "domain": "default",
+            "intent": "commands.list"
+          },
+          "hello": {
+            "domain": "default",
+            "intent": "greeting"
+          },
+          "hi": {
+            "domain": "default",
+            "intent": "greeting"
+          }
+        },
+        "intentDict": {
+          "hackers.count": "default",
+          "commands.list": "default",
+          "greeting": "default"
+        },
+        "useStemDict": true,
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "language": "en",
+              "useNoneFeature": true,
+              "config": {
+                "activation": "leaky-relu",
+                "hiddenLayers": [],
+                "iterations": 20000,
+                "learningRate": 0.7,
+                "errorThresh": 0.00005,
+                "momentum": 0.5,
+                "deltaErrorThresh": 0.000001,
+                "maxDecimals": 9,
+                "leakyReluAlpha": 0.08,
+                "timeout": 120000
+              }
+            },
+            "language": "en",
+            "keepStopwords": true,
+            "docs": [
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "how",
+                  "mani",
+                  "hacker",
+                  "are",
+                  "there"
+                ]
+              },
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "show",
+                  "attack"
+                ]
+              },
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "number",
+                  "of",
+                  "intrud"
+                ]
+              },
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "how",
+                  "mani",
+                  "threat"
+                ]
+              },
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "are",
+                  "there",
+                  "ani",
+                  "hacker"
+                ]
+              },
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "show",
+                  "me",
+                  "hacker"
+                ]
+              },
+              {
+                "intent": "commands.list",
+                "tokens": [
+                  "show",
+                  "command"
+                ]
+              },
+              {
+                "intent": "commands.list",
+                "tokens": [
+                  "what",
+                  "attack",
+                  "exist"
+                ]
+              },
+              {
+                "intent": "commands.list",
+                "tokens": [
+                  "list",
+                  "payload"
+                ]
+              },
+              {
+                "intent": "commands.list",
+                "tokens": [
+                  "give",
+                  "me",
+                  "command"
+                ]
+              },
+              {
+                "intent": "commands.list",
+                "tokens": [
+                  "list",
+                  "all",
+                  "attack"
+                ]
+              },
+              {
+                "intent": "greeting",
+                "tokens": [
+                  "hello"
+                ]
+              },
+              {
+                "intent": "greeting",
+                "tokens": [
+                  "hi"
+                ]
+              }
+            ],
+            "features": {
+              "how": 2,
+              "mani": 2,
+              "hacker": 3,
+              "are": 2,
+              "there": 2,
+              "show": 3,
+              "attack": 3,
+              "number": 1,
+              "of": 1,
+              "intrud": 1,
+              "threat": 1,
+              "ani": 1,
+              "me": 2,
+              "command": 2,
+              "what": 1,
+              "exist": 1,
+              "list": 2,
+              "payload": 1,
+              "give": 1,
+              "all": 1,
+              "hello": 1,
+              "hi": 1
+            },
+            "isEditing": false,
+            "className": "BrainNLU",
+            "classifier": {
+              "className": "BrainClassifier",
+              "settings": {
+                "language": "en",
+                "useNoneFeature": true,
+                "config": {
+                  "activation": "leaky-relu",
+                  "hiddenLayers": [],
+                  "iterations": 20000,
+                  "learningRate": 0.7,
+                  "errorThresh": 0.00005,
+                  "momentum": 0.5,
+                  "deltaErrorThresh": 0.000001,
+                  "maxDecimals": 9,
+                  "leakyReluAlpha": 0.08,
+                  "timeout": 120000
+                }
+              },
+              "labels": [],
+              "network": {
+                "sizes": [
+                  23,
+                  4
+                ],
+                "layers": [
+                  {
+                    "how": {},
+                    "mani": {},
+                    "hacker": {},
+                    "are": {},
+                    "there": {},
+                    "show": {},
+                    "attack": {},
+                    "number": {},
+                    "of": {},
+                    "intrud": {},
+                    "threat": {},
+                    "ani": {},
+                    "me": {},
+                    "command": {},
+                    "what": {},
+                    "exist": {},
+                    "list": {},
+                    "payload": {},
+                    "give": {},
+                    "all": {},
+                    "hello": {},
+                    "hi": {},
+                    "nonefeature": {}
+                  },
+                  {
+                    "hackers.count": {
+                      "bias": 1.819034424,
+                      "weights": {
+                        "how": 2.410506964,
+                        "mani": 2.410506964,
+                        "hacker": 3.370378733,
+                        "are": 1.2865026,
+                        "there": 1.2865026,
+                        "show": 5.885495186,
+                        "attack": 4.65639782,
+                        "number": 3.559153318,
+                        "of": 3.559153318,
+                        "intrud": 3.559153318,
+                        "threat": 5.803264141,
+                        "ani": 4.679260731,
+                        "me": 1.41849041,
+                        "command": -7.638056755,
+                        "what": -3.228019953,
+                        "exist": -3.228019953,
+                        "list": -3.559329271,
+                        "payload": -0.669456661,
+                        "give": -0.665385783,
+                        "all": -2.889872313,
+                        "hello": -1.815981746,
+                        "hi": -1.814263225,
+                        "nonefeature": -1.81216979
+                      }
+                    },
+                    "commands.list": {
+                      "bias": 2.083659667,
+                      "weights": {
+                        "how": -0.814411044,
+                        "mani": -0.814411044,
+                        "hacker": -1.992933154,
+                        "are": -0.490601003,
+                        "there": -0.490601003,
+                        "show": -0.978458405,
+                        "attack": -0.726671755,
+                        "number": -0.707509875,
+                        "of": -0.707509875,
+                        "intrud": -0.707509875,
+                        "threat": -0.500981331,
+                        "ani": -0.17717129,
+                        "me": -1.045260549,
+                        "command": 11.103582382,
+                        "what": 5.540317059,
+                        "exist": 5.540317059,
+                        "list": 7.17765522,
+                        "payload": 3.322003126,
+                        "give": 0.457071334,
+                        "all": 3.855649233,
+                        "hello": -2.119620323,
+                        "hi": -2.109971523,
+                        "nonefeature": -2.102907181
+                      }
+                    },
+                    "greeting": {
+                      "bias": 3.378813463,
+                      "weights": {
+                        "how": -1.198261023,
+                        "mani": -1.198261023,
+                        "hacker": -1.056349516,
+                        "are": -0.84624213,
+                        "there": -0.84624213,
+                        "show": -1.746060133,
+                        "attack": -1.71372056,
+                        "number": -1.125946879,
+                        "of": -1.125946879,
+                        "intrud": -1.125946879,
+                        "threat": -0.981225908,
+                        "ani": -0.629207015,
+                        "me": -0.978605449,
+                        "command": -1.630685687,
+                        "what": -0.831844509,
+                        "exist": -0.831844509,
+                        "list": -1.791818619,
+                        "payload": -1.583708286,
+                        "give": -0.768498242,
+                        "all": -0.208110332,
+                        "hello": 9.101574898,
+                        "hi": 9.097811699,
+                        "nonefeature": -3.349299431
+                      }
+                    },
+                    "None": {
+                      "bias": 1.690668502,
+                      "weights": {
+                        "how": -0.603415728,
+                        "mani": -0.603415728,
+                        "hacker": -0.536434472,
+                        "are": -0.424626678,
+                        "there": -0.424626678,
+                        "show": -0.881070256,
+                        "attack": -0.866482794,
+                        "number": -0.563768625,
+                        "of": -0.563768625,
+                        "intrud": -0.563768625,
+                        "threat": -0.484449714,
+                        "ani": -0.305660546,
+                        "me": -0.496665508,
+                        "command": -0.809921443,
+                        "what": -0.41234839,
+                        "exist": -0.41234839,
+                        "list": -0.900331497,
+                        "payload": -0.79039526,
+                        "give": -0.384857595,
+                        "all": -0.109936267,
+                        "hello": -1.671208739,
+                        "hi": -1.666071534,
+                        "nonefeature": 10.768478394
+                      }
+                    }
+                  }
+                ],
+                "trainOpts": {
+                  "iterations": 20000,
+                  "errorThresh": 0.00005,
+                  "fixedError": false,
+                  "deltaErrorThresh": 0.000001,
+                  "learningRate": 0.7,
+                  "momentum": 0.5,
+                  "leakyReluAlpha": 0.08,
+                  "maxDecimals": 9,
+                  "log": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "he": {
+        "settings": {
+          "language": "he",
+          "useNoneFeature": false,
+          "config": {
+            "activation": "leaky-relu",
+            "hiddenLayers": [],
+            "iterations": 20000,
+            "learningRate": 0.7,
+            "errorThresh": 0.00005,
+            "momentum": 0.5,
+            "deltaErrorThresh": 0.000001,
+            "maxDecimals": 9,
+            "leakyReluAlpha": 0.08,
+            "timeout": 120000
+          }
+        },
+        "language": "he",
+        "nluClassName": "BrainNLU",
+        "useMasterDomain": true,
+        "trainByDomain": false,
+        "keepStopwords": true,
+        "stemDict": {
+          "האקרים,יש,כמה": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "תוקפים,תראה": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "יש,כמה,תוקפים": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "האקרים,יש": {
+            "domain": "default",
+            "intent": "hackers.count"
+          },
+          "פקודות,תראה": {
+            "domain": "default",
+            "intent": "commands.list"
+          },
+          "איזה,יש,מתקפות": {
+            "domain": "default",
+            "intent": "commands.list"
+          },
+          "פקודות,רשימת": {
+            "domain": "default",
+            "intent": "commands.list"
+          },
+          "שלום": {
+            "domain": "default",
+            "intent": "greeting"
+          },
+          "היי": {
+            "domain": "default",
+            "intent": "greeting"
+          }
+        },
+        "intentDict": {
+          "hackers.count": "default",
+          "commands.list": "default",
+          "greeting": "default"
+        },
+        "useStemDict": true,
+        "domains": {
+          "master_domain": {
+            "settings": {
+              "language": "he",
+              "useNoneFeature": false,
+              "config": {
+                "activation": "leaky-relu",
+                "hiddenLayers": [],
+                "iterations": 20000,
+                "learningRate": 0.7,
+                "errorThresh": 0.00005,
+                "momentum": 0.5,
+                "deltaErrorThresh": 0.000001,
+                "maxDecimals": 9,
+                "leakyReluAlpha": 0.08,
+                "timeout": 120000
+              }
+            },
+            "language": "he",
+            "keepStopwords": true,
+            "docs": [
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "כמה",
+                  "האקרים",
+                  "יש"
+                ]
+              },
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "תראה",
+                  "תוקפים"
+                ]
+              },
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "כמה",
+                  "תוקפים",
+                  "יש"
+                ]
+              },
+              {
+                "intent": "hackers.count",
+                "tokens": [
+                  "יש",
+                  "האקרים"
+                ]
+              },
+              {
+                "intent": "commands.list",
+                "tokens": [
+                  "תראה",
+                  "פקודות"
+                ]
+              },
+              {
+                "intent": "commands.list",
+                "tokens": [
+                  "איזה",
+                  "מתקפות",
+                  "יש"
+                ]
+              },
+              {
+                "intent": "commands.list",
+                "tokens": [
+                  "רשימת",
+                  "פקודות"
+                ]
+              },
+              {
+                "intent": "greeting",
+                "tokens": [
+                  "שלום"
+                ]
+              },
+              {
+                "intent": "greeting",
+                "tokens": [
+                  "היי"
+                ]
+              }
+            ],
+            "features": {
+              "כמה": 2,
+              "האקרים": 2,
+              "יש": 4,
+              "תראה": 2,
+              "תוקפים": 2,
+              "פקודות": 2,
+              "איזה": 1,
+              "מתקפות": 1,
+              "רשימת": 1,
+              "שלום": 1,
+              "היי": 1
+            },
+            "isEditing": false,
+            "className": "BrainNLU",
+            "classifier": {
+              "className": "BrainClassifier",
+              "settings": {
+                "language": "he",
+                "useNoneFeature": false,
+                "config": {
+                  "activation": "leaky-relu",
+                  "hiddenLayers": [],
+                  "iterations": 20000,
+                  "learningRate": 0.7,
+                  "errorThresh": 0.00005,
+                  "momentum": 0.5,
+                  "deltaErrorThresh": 0.000001,
+                  "maxDecimals": 9,
+                  "leakyReluAlpha": 0.08,
+                  "timeout": 120000
+                }
+              },
+              "labels": [],
+              "network": {
+                "sizes": [
+                  11,
+                  3
+                ],
+                "layers": [
+                  {
+                    "כמה": {},
+                    "האקרים": {},
+                    "יש": {},
+                    "תראה": {},
+                    "תוקפים": {},
+                    "פקודות": {},
+                    "איזה": {},
+                    "מתקפות": {},
+                    "רשימת": {},
+                    "שלום": {},
+                    "היי": {}
+                  },
+                  {
+                    "hackers.count": {
+                      "bias": 1.680460162,
+                      "weights": {
+                        "כמה": 0.108598702,
+                        "האקרים": 7.071008205,
+                        "יש": 3.629023314,
+                        "תראה": 3.377478123,
+                        "תוקפים": 7.208518505,
+                        "פקודות": -4.924591541,
+                        "איזה": -2.667212486,
+                        "מתקפות": -2.667212486,
+                        "רשימת": -0.318779767,
+                        "שלום": -1.664479017,
+                        "היי": -1.658853054
+                      }
+                    },
+                    "commands.list": {
+                      "bias": 1.568102104,
+                      "weights": {
+                        "כמה": -1.487414837,
+                        "האקרים": -2.881123066,
+                        "יש": 1.319980621,
+                        "תראה": 2.429806232,
+                        "תוקפים": -3.90121913,
+                        "פקודות": 8.372478485,
+                        "איזה": 4.799651146,
+                        "מתקפות": 4.799651146,
+                        "רשימת": 2.640005112,
+                        "שלום": -1.632828116,
+                        "היי": -1.617588878
+                      }
+                    },
+                    "greeting": {
+                      "bias": 4.463213677,
+                      "weights": {
+                        "כמה": -0.723933518,
+                        "האקרים": -1.677697539,
+                        "יש": -2.77314949,
+                        "תראה": -2.474148035,
+                        "תוקפים": -1.977411628,
+                        "פקודות": -2.597358704,
+                        "איזה": -0.844924688,
+                        "מתקפות": -0.844924688,
+                        "רשימת": -1.85009563,
+                        "שלום": 8.011022568,
+                        "היי": 8.010637283
+                      }
+                    }
+                  }
+                ],
+                "trainOpts": {
+                  "iterations": 20000,
+                  "errorThresh": 0.00005,
+                  "fixedError": false,
+                  "deltaErrorThresh": 0.000001,
+                  "learningRate": 0.7,
+                  "momentum": 0.5,
+                  "leakyReluAlpha": 0.08,
+                  "maxDecimals": 9,
+                  "log": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "extraSentences": [
+      [
+        "en",
+        "how many hackers are there"
+      ],
+      [
+        "en",
+        "show attackers"
+      ],
+      [
+        "en",
+        "number of intruders"
+      ],
+      [
+        "en",
+        "how many threats"
+      ],
+      [
+        "en",
+        "are there any hackers"
+      ],
+      [
+        "en",
+        "show me hackers"
+      ],
+      [
+        "en",
+        "show commands"
+      ],
+      [
+        "en",
+        "what attacks exist"
+      ],
+      [
+        "en",
+        "list payloads"
+      ],
+      [
+        "en",
+        "give me commands"
+      ],
+      [
+        "en",
+        "list all attacks"
+      ],
+      [
+        "en",
+        "hello"
+      ],
+      [
+        "en",
+        "hi"
+      ],
+      [
+        "he",
+        "כמה האקרים יש"
+      ],
+      [
+        "he",
+        "תראה תוקפים"
+      ],
+      [
+        "he",
+        "כמה תוקפים יש"
+      ],
+      [
+        "he",
+        "יש האקרים"
+      ],
+      [
+        "he",
+        "תראה פקודות"
+      ],
+      [
+        "he",
+        "איזה מתקפות יש"
+      ],
+      [
+        "he",
+        "רשימת פקודות"
+      ],
+      [
+        "he",
+        "שלום"
+      ],
+      [
+        "he",
+        "היי"
+      ]
+    ]
+  },
+  "nerManager": {
+    "settings": {},
+    "threshold": 0.8,
+    "builtins": [
+      "Number",
+      "Ordinal",
+      "Percentage",
+      "Age",
+      "Currency",
+      "Dimension",
+      "Temperature",
+      "DateTime",
+      "PhoneNumber",
+      "IpAddress",
+      "Boolean",
+      "Email",
+      "Hashtag",
+      "URL"
+    ],
+    "namedEntities": {}
+  },
+  "slotManager": {},
+  "responses": {},
+  "actions": {},
+  "utteranceDict": {
+    "?": "help"
+  }
+}
