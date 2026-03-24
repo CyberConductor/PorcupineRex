@@ -13,9 +13,6 @@
 
 <body>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<!-- HEADER                                                         -->
-<!-- ══════════════════════════════════════════════════════════════ -->
 <header>
   <div class="header-inner">
 
@@ -44,12 +41,8 @@
   </div>
 </header>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<!-- MAIN                                                           -->
-<!-- ══════════════════════════════════════════════════════════════ -->
 <div class="container">
 
-  <!-- ── ATTACKERS SECTION ──────────────────────────────────────── -->
   <div id="attackers-section" class="section active">
 
     <div class="page-title">
@@ -97,9 +90,8 @@
       </table>
     </div>
 
-  </div><!-- /attackers-section -->
+  </div>
 
-  <!-- ── COMMANDS SECTION ───────────────────────────────────────── -->
   <div id="commands-section" class="section">
 
     <div class="page-title">
@@ -156,7 +148,6 @@
       </table>
     </div>
 
-    <!-- Chat panel -->
     <div class="panel chat-panel">
       <div class="panel-header">
         <span class="panel-title">🤖 Ask the Dashboard Bot</span>
@@ -175,15 +166,11 @@
       </div>
     </div>
 
-  </div><!-- /commands-section -->
+  </div>
 
-</div><!-- /container -->
+</div>
 
-<!-- ══════════════════════════════════════════════════════════════ -->
-<!-- SCRIPTS                                                        -->
-<!-- ══════════════════════════════════════════════════════════════ -->
 <script>
-/* ── Shared Chart defaults ──────────────────────────────────────── */
 const CHART_DEFAULTS = {
   color: '#6b7a8d',
   borderColor: 'rgba(255,255,255,0.05)',
@@ -208,10 +195,8 @@ const gridStyle = {
 
 const tickStyle = { color: '#4a5568', font: { family: "'DM Mono', monospace", size: 10 } };
 
-/* ── Chart instances ────────────────────────────────────────────── */
 let attackChartInst, attackTypeChartInst, commandsTimeChartInst;
 
-/* ── Tab switching ──────────────────────────────────────────────── */
 function switchTab(e, tab) {
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
   e.target.classList.add('active');
@@ -224,7 +209,6 @@ function fmt(ts) {
   return ts ? new Date(ts).toLocaleString(undefined, { month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
 }
 
-/* ── Load Attackers ─────────────────────────────────────────────── */
 async function loadAttackersData() {
   const data = await fetch('/api/hackers').then(r => r.json());
 
@@ -283,7 +267,6 @@ async function loadAttackersData() {
   });
 }
 
-/* ── Load Commands ──────────────────────────────────────────────── */
 async function loadCommandsData() {
   const data = await fetch('/api/commands').then(r => r.json());
 
@@ -338,7 +321,6 @@ async function loadCommandsData() {
     }
   });
 
-  /* Commands over time */
   const byHour = {};
   data.forEach(cmd => {
     const d = new Date(cmd.timestamp);
@@ -385,7 +367,6 @@ async function loadCommandsData() {
     }
   });
 
-  /* Commands table */
   const tbody = document.getElementById('commandsTable');
   tbody.innerHTML = '';
 
@@ -400,7 +381,7 @@ async function loadCommandsData() {
   });
 }
 
-/* ── Chat ───────────────────────────────────────────────────────── */
+
 async function sendChat() {
   const input = document.getElementById('chatInput');
   const chatbox = document.getElementById('chatbox');
@@ -434,7 +415,6 @@ async function sendChat() {
   }
 }
 
-/* ── Init ───────────────────────────────────────────────────────── */
 loadAttackersData();
 loadCommandsData();
 </script>
