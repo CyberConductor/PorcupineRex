@@ -16,7 +16,6 @@ fi
 
 mkdir -p "$STATE_DIR"
 
-# אל תאפס אם כבר קיים
 touch "$ATTEMPTS_FILE"
 
 send_telegram() {
