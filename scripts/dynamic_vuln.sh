@@ -26,7 +26,15 @@ touch "$STATE_DB"
 log_plan()
 {
     msg="$1"
-    echo "[PLAN] $(date) $msg" | tee -a "$PLAN_LOG"
+    echo "[PLAN] $(date) $msg" | te
+    
+    
+    
+    
+    
+    
+    e -a "$PLAN_LOG"
+    
 }
 
 send_telegram()
