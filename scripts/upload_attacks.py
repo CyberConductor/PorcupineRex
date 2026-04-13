@@ -2,8 +2,10 @@ from datetime import datetime
 from pymongo import MongoClient
 import os
 import time
+import dotenv
+dotenv.load_dotenv()
 
-MONGO_URI = "mongodb+srv://kalaiboaz_db_user:XUV3rthRmubjnuHG@honeypot.nyvgpyd.mongodb.net/"
+MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = "honeypot"
 COLLECTION_NAME = "commands"
 
