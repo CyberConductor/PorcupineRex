@@ -1,6 +1,11 @@
 #!/bin/bash
 
 sudo apt update -y
+sudo apt install vsftpd -y
+sudo systemctl enable --now vsftpd
+sudo apt install python3 -y
+sudo apt install python3-pip -y
+sudo pip3 install -r requirements.txt
 sudo apt install docker.io openssh-server -y
 sudo systemctl enable --now ssh
 sudo systemctl enable --now docker
