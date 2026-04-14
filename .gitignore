@@ -1,0 +1,5 @@
+.env
+tests/
+info/
+__pycache__/
+site/node_modules/

@@ -1,0 +1,32 @@
+Jan  1 14:11:58 server1 systemd[1]: Starting Daily apt download activities...
+Jan  1 14:12:01 server1 kernel: CPU0: Core temperature above threshold, cpu clock throttled
+Jan  1 14:12:02 server1 kernel: CPU1: Core temperature above threshold, cpu clock throttled
+Jan  1 14:12:03 server1 systemd[1]: apt-daily.service: Deactivated successfully.
+Jan  1 14:12:04 server1 systemd[1]: apache2.service: Scheduled restart job, restart counter is at 3.
+Jan  1 14:12:05 server1 systemd[1]: apache2.service: Start request repeated too quickly.
+Jan  1 14:12:05 server1 systemd[1]: apache2.service: Failed with result 'exit-code'.
+Jan  1 14:12:06 server1 systemd[1]: Failed to start The Apache HTTP Server.
+Jan  2 14:12:09 server1 sshd[1027]: Failed password for invalid user admin from 192.168.1.105 port 54321 ssh2
+Jan  2 14:12:10 server1 sshd[1027]: Failed password for invalid user test from 192.168.1.105 port 54322 ssh2
+Jan  2 14:12:12 server1 sshd[1027]: error: maximum authentication attempts exceeded for invalid user admin from 192.168.1.105 port 54321 ssh2
+Jan  2 14:12:15 server1 CRON[2001]: (root) CMD (/usr/local/bin/backup.sh)
+Jan  2 14:12:16 server1 CRON[2001]: pam_unix(cron:session): session opened for user root by (uid=0)
+Jan  2 14:12:20 server1 CRON[2001]: pam_unix(cron:session): session closed for user root
+Jan  2 14:12:27 server1 kernel: EXT4-fs error (device sda1): ext4_find_entry:1452: inode #12345: comm bash: reading directory lblock 0
+Jan  2 14:12:28 server1 kernel: Buffer I/O error on device sda1, logical block 0
+Jan  2 14:12:29 server1 systemd[1]: systemd-journald.service: Watchdog timeout, restarting.
+Jan  2 14:12:34 server1 systemd[1]: Starting PostgreSQL Database Server...
+Jan  2 14:12:36 server1 postgres[877]: FATAL: password authentication failed for user "postgres"
+Jan  2 14:12:37 server1 postgres[877]: LOG: database system is shut down
+Jan  2 14:12:40 server1 systemd[1]: postgresql.service: Main process exited, code=exited, status=1/FAILURE
+Jan  2 14:12:40 server1 systemd[1]: postgresql.service: Failed with result 'exit-code'.
+Jan  2 14:12:41 server1 systemd[1]: postgresql.service: Scheduled restart job, restart counter is at 2.
+Jan  2 14:12:44 server1 kernel: Out of memory: Kill process 5678 (java) score 102 or sacrifice child
+Jan  2 14:12:45 server1 kernel: Killed process 5678 (java) total-vm:3124000kB, anon-rss:1984000kB, file-rss:0kB
+Jan  2 14:12:46 server1 kernel: Killed process 4444 (python3) total-vm:2048000kB, anon-rss:1024000kB, file-rss:0kB
+Jan  2 14:12:47 server1 systemd[1]: docker.service: Main process exited, code=killed, status=9/KILL
+Jan  2 14:12:47 server1 systemd[1]: docker.service: Failed with result 'signal'.
+Jan  2 14:12:53 server1 NetworkManager[912]: <warn> dhcp4 (eth0): request timed out
+Jan  2 14:12:54 server1 NetworkManager[912]: <warn> dhcp4 (eth0): state changed timeout -> failed
+Jan  2 14:12:55 server1 systemd[1]: NetworkManager.service: Failed with result 'timeout'.
+Jan  2 14:12:57 server1 systemd[1]: NetworkManager.service: Scheduled restart job, restart counter is at 1.

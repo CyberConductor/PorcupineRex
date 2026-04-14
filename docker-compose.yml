@@ -1,0 +1,54 @@
+networks:
+  honeynet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.0.0/24
+
+services:
+
+  entry:
+    build: .
+    image: ubuntu_ho
+    container_name: entry
+    hostname: server1
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.10
+    ports:
+      - "2222:22"
+
+  db:
+    image: ubuntu_ho
+    container_name: db
+    hostname: db-server
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.20
+
+  admin:
+    image: ubuntu_ho
+    container_name: admin
+    hostname: admin-server
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.30
+
+  sensor:
+    image: ubuntu:22.04
+    container_name: sensor
+    hostname: sensor
+    networks:
+      honeynet:
+        ipv4_address: 172.30.0.5
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    volumes:
+      - ./captures:/captures
+    command: >
+      bash -c "
+      apt update &&
+      apt install -y tcpdump &&
+      tcpdump -i eth0 -w /captures/honeynet.pcap
+      "
