@@ -24,7 +24,7 @@ def get_updates(offset=None):
     if offset is not None:
         params["offset"] = offset
 
-    r = requests.get(f"{BASE_URL}/getUpdates", params=params, timeout=10)
+    r = requests.get(f"{BASE_URL}/getUpdates", params=params, timeout=70)
     return r.json()
 
 
@@ -33,7 +33,7 @@ def send_message(chat_id, text):
         "chat_id": chat_id,
         "text": text
     }
-    requests.post(f"{BASE_URL}/sendMessage", json=payload, timeout=10)
+    requests.post(f"{BASE_URL}/sendMessage", json=payload, timeout=70)
 
 
 def format_hacker(h):

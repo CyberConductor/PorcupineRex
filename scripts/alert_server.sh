@@ -1,7 +1,10 @@
 #!/bin/bash
 
-LOG_FILE="/var/log/attack_monitor.log"
+#Add this file in data/alerts.txt with the IPs or hostnames of the alert servers:
 ALERT_SERVERS="alerts.txt"
+
+
+LOG_FILE="/var/log/attack_monitor.log"
 RISK_SCORE=0
 THRESHOLD=8
 
