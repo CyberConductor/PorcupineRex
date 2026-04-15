@@ -42,17 +42,6 @@ A core design concept of the system is deception-based security: attackers are l
 
 ---
 
-## 🧠 Honeypot Concept
-
-PorcupineRex is built around a deception model:
-
-- The **porcupine** represents the visible decoy environment
-- The hidden **T-Rex layer** represents concealed detection and response logic
-- Attackers interact with what looks like a normal system
-- Behind the scenes, every action is monitored, logged, and analysed
-
----
-
 ## 🛠️ Installation
 
 ```bash
