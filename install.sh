@@ -65,8 +65,19 @@ spinner()
 
 run()
 {
-    "$@" > /dev/null 2>&1 &
-    spinner $! "$1"
+    "$@" > /tmp/install.log 2>&1 &
+    pid=$!
+    spinner $pid "$1"
+
+    wait $pid
+    exit_code=$?
+
+    if [ $exit_code -ne 0 ]; then
+        echo -e "${RED}[!] Error in: $1${NC}"
+        echo "Last logs:"
+        tail -n 20 /tmp/install.log
+        exit $exit_code
+    fi
 }
 
 
