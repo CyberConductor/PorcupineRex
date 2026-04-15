@@ -36,26 +36,26 @@ RUN cp /etc/skel/.bashrc /home/ho/.bashrc \
  && chown ho:ho /home/ho/.bashrc /home/ho/.profile
 
 
-COPY users.json /usr/local/etc/users.json
-COPY upload_attacks.py /usr/local/bin/upload_attacks.py
-COPY create_users.sh /usr/local/bin/create_users.sh
-COPY put_users_files.sh /usr/local/bin/put_users_files.sh
-COPY detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
-COPY attack_monitor.sh /usr/local/bin/attack_monitor.sh
-COPY dynamic_vuln.sh /usr/local/bin/dynamic_vuln.sh
-COPY del_detect.sh /usr/local/bin/del_detect.sh
-COPY liveLog.sh /usr/local/bin/liveLog.sh
-COPY alert_server.sh /usr/local/bin/alert_server.sh
-COPY check_awareness.sh /usr/local/bin/check_awareness.sh
-COPY start.sh /start.sh
+COPY data/users.json /usr/local/etc/users.json
+COPY scripts/upload_attacks.py /usr/local/bin/upload_attacks.py
+COPY scripts/create_users.sh /usr/local/bin/create_users.sh
+COPY scripts/put_users_files.sh /usr/local/bin/put_users_files.sh
+COPY scripts/detect_bruteforce.sh /usr/local/bin/detect_bruteforce.sh
+COPY scripts/attack_monitor.sh /usr/local/bin/attack_monitor.sh
+COPY scripts/dynamic_vuln.sh /usr/local/bin/dynamic_vuln.sh
+COPY scripts/del_detect.sh /usr/local/bin/del_detect.sh
+COPY scripts/liveLog.sh /usr/local/bin/liveLog.sh
+COPY scripts/alert_server.sh /usr/local/bin/alert_server.sh
+COPY scripts/check_awareness.sh /usr/local/bin/check_awareness.sh
+COPY scripts/start.sh /start.sh
 
 COPY .env /usr/local/bin/.env
-COPY vsftpd.conf /etc/vsftpd.conf
-COPY errors.log /usr/local/share/errors.log
-COPY inject_errors.sh /usr/local/bin/inject_errors.sh
+COPY config/vsftpd.conf /etc/vsftpd.conf
+COPY data/errors.log /usr/local/share/errors.log
+COPY scripts/inject_errors.sh /usr/local/bin/inject_errors.sh
 
-COPY alert_server.sh /usr/local/bin/alert_server.sh
-COPY alerts.txt /usr/local/bin/alerts.txt
+COPY scripts/alert_server.sh /usr/local/bin/alert_server.sh
+COPY data/alerts.txt /usr/local/bin/alerts.txt
 
 RUN chown root:root /usr/local/bin/alert_server.sh /usr/local/bin/alerts.txt \
  && chmod 700 /usr/local/bin/alert_server.sh \
