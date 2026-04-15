@@ -1,0 +1,16 @@
+{
+  "users": [
+    "admin",
+    "finance",
+    "hr",
+    "it_support",
+    "ceo",
+    "cto",
+    "sales_mgr",
+    "marketing",
+    "devops",
+    "legal",
+    "intern_john",
+    "intern_jane"
+  ]
+}
