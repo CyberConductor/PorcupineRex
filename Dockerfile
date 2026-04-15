@@ -52,7 +52,6 @@ COPY scripts/start.sh /start.sh
 COPY .env /usr/local/bin/.env
 COPY config/vsftpd.conf /etc/vsftpd.conf
 COPY data/errors.log /usr/local/share/errors.log
-COPY scripts/inject_errors.sh /usr/local/bin/inject_errors.sh
 
 COPY scripts/alert_server.sh /usr/local/bin/alert_server.sh
 COPY data/alerts.txt /usr/local/bin/alerts.txt
