@@ -1,0 +1,16 @@
+#!/bin/bash
+
+LINE="ForceCommand docker run -it --rm ubuntu:latest /bin/bash"
+
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+
+if ! grep -Fxq "$LINE" /etc/ssh/sshd_config; then
+    echo "$LINE" | sudo tee -a /etc/ssh/sshd_config
+    echo "Line added successfully."
+else
+    echo "Line already exists in sshd_config."
+fi
+
+sudo systemctl restart ssh
+
+echo "SSHD restarted."
